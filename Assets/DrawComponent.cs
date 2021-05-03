@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class DrawComponent : MonoBehaviour
@@ -40,11 +38,12 @@ public class DrawComponent : MonoBehaviour
             RaycastHit2D[] rays = Physics2D.LinecastAll(lastMousePos, curMousePos);
             foreach (var ray in rays)
             {
-                if(ray.collider != null && ray.collider.tag == "Pixel")
+                ray.collider.GetComponent<Image>().color = Input.GetMouseButton(0) ? pickedColor : Color.white;
+                // Might need to check tags if there will be other objects with colliders.
+                /*if (ray.collider.tag == "Pixel")
                 {
-
                     ray.collider.GetComponent<Image>().color = Input.GetMouseButton(0) ? pickedColor : Color.white;
-                }
+                }*/
             }
 
             lastMousePos = curMousePos;
