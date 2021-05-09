@@ -18,8 +18,8 @@ class PaintScene extends Phaser.Scene{
 
     	this.users = 0	
     	this.UserTextArr = []
-    	// https://warofart.herokuapp.com
-        this.io = io("ws://localhost:3000", {transports : ["websocket"]});
+    	
+        this.io = io("https://warofart.herokuapp.com", {transports : ["websocket"]});
 
         this.SocketEvents(this.io, self)
         
@@ -34,22 +34,22 @@ class PaintScene extends Phaser.Scene{
 
 
 
-		this.playerBox = this.add.sprite(120, 355,"playersContainer")
+		this.playerBox = this.add.sprite(110, 355,"playersContainer")
 		this.playerBox.setScale(0.35)
 
-		this.paintCanvasR = new Canvas(605, 35, 44.5, 0.26, 1, this.io, this, "R")
-		this.paintCanvasL = new Canvas(270, 35, 44.5, 0.26, 1, this.io, this, "L")
-		this.paintCanvasDrawable = new Canvas(310, 59, 72, 0.42, 2, this.io, this, "M")
+		this.paintCanvasR = new Canvas(655, 35, 11.1, 0.26, 1, this.io, this, "R")
+		this.paintCanvasL = new Canvas(315, 35, 11.1, 0.26, 1, this.io, this, "L")
+		this.paintCanvasDrawable = new Canvas(350, 117, 18, 0.42, 2, this.io, this, "M")
 
 		this.paintCanvasDrawable.canPaint = true
 		this.paintCanvasR.canPaint = true
 		this.paintCanvasL.canPaint = true
 
-		this.drawB = new Button("smallButton", 250,600, "D", this, function(){
+		this.drawB = new Button("smallButton", 270, 480, "D", this, function(){
         	self.PrepareSceneForDraw()
         })
 
-        this.guessB = new Button("smallButton", 250,500, "G", this, function(){
+        this.guessB = new Button("smallButton", 270, 580, "G", this, function(){
         	self.PrepareSceneForGuess()
         })
 

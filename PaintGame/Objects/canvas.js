@@ -22,7 +22,7 @@ class Canvas {
 	create(game){
 	  	var self = this
 
-		this.canvas = game.add.sprite(this.xPos, this.yPos, "canvas").setInteractive();
+		this.canvas = game.add.sprite(this.xPos, this.yPos, "canvas").setInteractive()
 		this.canvas.setOrigin(0,0)
 
 		this.canvas.setScale(this.spriteScale)
@@ -38,8 +38,8 @@ class Canvas {
 		this.limits ={
 			x1: (self.xPos + self.drawMargin),
 			x2: (self.xPos + self.canvas.displayWidth - self.drawMargin),
-			y1: (self.yPos + self.drawMargin),
-			y2: (self.yPos + self.canvas.displayHeight - self.drawMargin)
+			y1: (self.yPos + self.drawMargin - 3),
+			y2: (self.yPos + self.canvas.displayHeight - self.drawMargin - 2)
 		}
 
 		this.graphics = game.add.graphics();
@@ -52,7 +52,6 @@ class Canvas {
 	  	{
 	  		this.OldMouseX = null
 	  		this.OldMouseY = null
-	  		console.log("Can't or invis.")
 	  		return
 	  	}
 
