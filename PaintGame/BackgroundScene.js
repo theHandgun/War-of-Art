@@ -5,7 +5,7 @@ class BackgroundScene extends Phaser.Scene{
 	}
 
 	preload(){
-		this.load.image("bg", "PaintGame/Assets/BG/BG.jpg")
+		this.load.image("bg", "PaintGame/Assets/BG/bg.png")
 	}
 
 	init()

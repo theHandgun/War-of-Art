@@ -11,16 +11,17 @@ class PaintScene extends Phaser.Scene{
 		this.load.image("playersContainer", "PaintGame/Assets/Components/lobby.png")
 	}
 
-	init(data)
+	init()
     {
     	var self = this
-    	console.log(data)
-    	console.log(data.id)
 
     	var self = this
     	this.users = 0
 
-        this.io = io("http://localhost:3000", {transports : ["websocket"] });
+        this.io = io("https://warofart.herokuapp.com", {transports : ["websocket"]});
+        this.io.on("connect_error", (err) => {
+			console.log(`connect_error due to ${err.message}`);
+		});
         this.SocketEvents(this.io, self)
         
     }
@@ -48,6 +49,9 @@ class PaintScene extends Phaser.Scene{
 
 		this.graphics = this.add.graphics();
 		this.graphics.lineStyle(2, 0xFF3300, 1);
+
+		/*this.graphics2 = this.add.graphics();
+		this.graphics2.lineStyle(1.130, 0xFF3300, 1);*/
 
 		this.drawB = new Button("smallButton", 250,600, "D", this, function(){
         	self.PrepareSceneForDraw(self.graphics)
@@ -139,7 +143,7 @@ class PaintScene extends Phaser.Scene{
 		graphics.visible = false
 	}
 
-	Paint(data, graphics){
+	Paint(data, graphics, graphicsSmall){
 		graphics.beginPath()
 		graphics.moveTo(data.xPos, data.yPos)
 		graphics.lineTo(data.endX, data.endY)

@@ -33,6 +33,6 @@ class MainScene extends Phaser.Scene{
         self.registry.set("socket-port", "3000")
         self.registry.set("nickname", nick)
 
-        self.scene.start("PaintScene", {id: "test"});
+        self.scene.start("PaintScene");
     }
 }
