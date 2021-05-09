@@ -139,8 +139,10 @@ class PaintScene extends Phaser.Scene{
         	if(data.scaleFrom == "M"){
         		canvasToPaint.paintScaled(data, self.paintCanvasDrawable)
         	}
+        	else{
+        		self.paintCanvasDrawable.paint(data)
+        	}
 
-        	canvasToPaint.paint(data)
         })
 	}
 }
