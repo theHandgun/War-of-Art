@@ -24,6 +24,7 @@ class Canvas {
 
 		this.canvas = game.add.sprite(this.xPos, this.yPos, "canvas").setInteractive()
 		this.canvas.setOrigin(0,0)
+		
 
 		this.canvas.setScale(this.spriteScale)
 
@@ -44,6 +45,7 @@ class Canvas {
 
 		this.graphics = game.add.graphics();
 		this.graphics.lineStyle(this.graphicsScale, 0xFF3300, 1);
+		this.setVisible(true)
 	}
 
 	update(game){
@@ -90,12 +92,32 @@ class Canvas {
 		this.io.emit("paint", {xPos:_xPos, yPos:_yPos, endX: _endX, endY: _endY, id: this.id })
 	}
 
-	SetVisible(isVisible){
+	setVisible(isVisible){
 		this.canvas.visible = isVisible
 		this.graphics.visible = isVisible
 	}
 
-	Paint(data){
+	paintScaled(posData, canvasObj){
+
+		var scaleAmount = canvasObj.spriteScale / this.spriteScale
+
+		var x = (posData.xPos - canvasObj.canvas.x) / scaleAmount
+		var y = (posData.yPos - canvasObj.canvas.y) / scaleAmount
+		var x2 = (posData.endX - canvasObj.canvas.x) / scaleAmount
+		var y2 = (posData.endY - canvasObj.canvas.y) / scaleAmount
+
+		var paintData = {
+			xPos: this.canvas.x + x,
+			yPos: this.canvas.y + y,
+			endX: this.canvas.x + x2,
+			endY: this.canvas.y + y2
+		}
+
+		this.paint(paintData)
+
+	}
+
+	paint(data){
 		this.graphics.beginPath()
 		this.graphics.moveTo(data.xPos, data.yPos)
 		this.graphics.lineTo(data.endX, data.endY)

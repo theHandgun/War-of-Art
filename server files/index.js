@@ -27,7 +27,8 @@ io.on("connection", function(socket){
 	})
 
 	socket.on("paint", function(data){
-		io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: data.id})
+		io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: "R", scaleFrom: "M" })
+		socket.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: "M"})
 	})
 
 });
