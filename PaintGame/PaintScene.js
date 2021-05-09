@@ -6,6 +6,7 @@ class PaintScene extends Phaser.Scene{
 
 	preload(){
 		Button.preloadAll(this)
+		Canvas.preload(this)
 
 		this.load.image("canvas", "PaintGame/Assets/Components/canvas.png")
 		this.load.image("playersContainer", "PaintGame/Assets/Components/lobby.png")
@@ -15,13 +16,11 @@ class PaintScene extends Phaser.Scene{
     {
     	var self = this
 
-    	var self = this
-    	this.users = 0
+    	this.users = 0	
+    	this.UserTextArr = []
+    	// https://warofart.herokuapp.com
+        this.io = io("ws://localhost:3000", {transports : ["websocket"]});
 
-        this.io = io("https://warofart.herokuapp.com", {transports : ["websocket"]});
-        this.io.on("connect_error", (err) => {
-			console.log(`connect_error due to ${err.message}`);
-		});
         this.SocketEvents(this.io, self)
         
     }
@@ -32,33 +31,26 @@ class PaintScene extends Phaser.Scene{
 
 
 		this.IDText = this.add.text(10,20, "ID: " + this.id);
-		this.UserTextArr = []
+
 
 
 		this.playerBox = this.add.sprite(120, 355,"playersContainer")
 		this.playerBox.setScale(0.35)
 
-		this.paintCanvas2 = this.add.sprite(810, 230, "canvas").setInteractive();
-		this.paintCanvas2.setScale(0.26)
+		this.paintCanvasR = new Canvas(605, 35, 44.5, 0.26, 1, this.io, this, "R")
+		this.paintCanvasL = new Canvas(270, 35, 44.5, 0.26, 1, this.io, this, "L")
+		this.paintCanvasDrawable = new Canvas(310, 59, 72, 0.42, 2, this.io, this, "M")
 
-		this.paintCanvas1 = this.add.sprite(470, 230, "canvas").setInteractive();
-		this.paintCanvas1.setScale(0.26)
-
-		this.paintCanvasDrawable = this.add.sprite(620, 380, "canvas").setInteractive();
-		this.paintCanvasDrawable.setScale(0.42)
-
-		this.graphics = this.add.graphics();
-		this.graphics.lineStyle(2, 0xFF3300, 1);
-
-		/*this.graphics2 = this.add.graphics();
-		this.graphics2.lineStyle(1.130, 0xFF3300, 1);*/
+		this.paintCanvasDrawable.canPaint = true
+		this.paintCanvasR.canPaint = true
+		this.paintCanvasL.canPaint = true
 
 		this.drawB = new Button("smallButton", 250,600, "D", this, function(){
-        	self.PrepareSceneForDraw(self.graphics)
+        	self.PrepareSceneForDraw()
         })
 
         this.guessB = new Button("smallButton", 250,500, "G", this, function(){
-        	self.PrepareSceneForGuess(self.graphics)
+        	self.PrepareSceneForGuess()
         })
 
 		this.guessB.create()
@@ -66,17 +58,8 @@ class PaintScene extends Phaser.Scene{
 
 		this.PrepareSceneForDraw(this.graphics)
 
-		this.paintCanvasDrawable.on("pointerover",function(pointer){
-    		this.mouseOverCanvas = true;
-		});
 
-		this.paintCanvasDrawable.on("pointerout",function(pointer){
-    		this.mouseOverCanvas = false;
-		});
-
-
-
-		this.io.on("paint-response", function(data){self.Paint(data, self.graphics)})
+		
 
 		for(var i = 0; i < 12; i++){
 			this.UserTextArr[i] = this.add.text(45, 50 + (i+1)*45.2, "Empty", { fontFamily: 'Arial', fontSize: 20, color: '#00000'})
@@ -87,37 +70,12 @@ class PaintScene extends Phaser.Scene{
 
 
 	update(){
-		
-		let pointerX = this.input.x;
-		let pointerY = this.input.y;
 
-		if(this.OldMouseX == null){
-			this.OldMouseX = pointerX;
-			this.OldMouseY = pointerY;
-		}
+		this.IDText.setText("ID: " + this.id)
 
-		let deltaX = pointerX - this.OldMouseX;
-		let deltaY = pointerY - this.OldMouseY;
-
-
-		if(game.input.activePointer.isDown && this.paintCanvasDrawable.visible && this.paintCanvasDrawable.mouseOverCanvas){
-
-			if(this.OldMouseX > 860){ this.OldMouseX = 859;}
-			if(this.OldMouseX < 382){ this.OldMouseX = 381;}
-			if(this.OldMouseY > 617){ this.OldMouseY = 616;}
-			if(this.OldMouseY < 140){ this.OldMouseY = 141;}
-
-			if(pointerX > 860){ pointerX = 859;}
-			if(pointerX < 382){ pointerX = 381;}
-			if(pointerY > 617){ pointerY = 616;}
-			if(pointerY < 140){ pointerY = 141;}
-
-			this.SendPaintMsg(this.OldMouseX, this.OldMouseY, pointerX, pointerY)
-		}
-
-			this.OldMouseX = pointerX;
-			this.OldMouseY = pointerY;
-
+		this.paintCanvasL.update(this)
+		this.paintCanvasR.update(this)
+		this.paintCanvasDrawable.update(this)
 
 		for(var i = 0; i < 12; i++){
 			if(this.users[i] != null){
@@ -129,31 +87,19 @@ class PaintScene extends Phaser.Scene{
 		}
 	}
 
-	PrepareSceneForDraw(graphics){
-		this.paintCanvasDrawable.visible = true
-		this.paintCanvas1.visible = false
-		this.paintCanvas2.visible = false
-		graphics.visible = true
+	PrepareSceneForDraw(){
+		this.paintCanvasDrawable.SetVisible(true)
+		this.paintCanvasL.SetVisible(false)
+		this.paintCanvasR.SetVisible(false)
 	}
 
-	PrepareSceneForGuess(graphics){
-		this.paintCanvasDrawable.visible = false
-		this.paintCanvas1.visible = true
-		this.paintCanvas2.visible = true
-		graphics.visible = false
+	PrepareSceneForGuess(){
+
+		this.paintCanvasDrawable.SetVisible(false)
+		this.paintCanvasL.SetVisible(true)
+		this.paintCanvasR.SetVisible(true)
 	}
 
-	Paint(data, graphics, graphicsSmall){
-		graphics.beginPath()
-		graphics.moveTo(data.xPos, data.yPos)
-		graphics.lineTo(data.endX, data.endY)
-		graphics.closePath()
-		graphics.strokePath()
-	}
-
-	SendPaintMsg(_xPos, _yPos, _endX, _endY){
-		this.io.emit("paint", {xPos:_xPos, yPos:_yPos, endX: _endX, endY: _endY })
-	}
 
 	SocketEvents(io, self){
 
@@ -178,6 +124,17 @@ class PaintScene extends Phaser.Scene{
 
         io.on("newHost", function(data){
 
+        })
+
+        io.on("paint-response", function(data)
+        {
+        	var canvasToPaint
+
+        	if(data.canvas == "L"){ canvasToPaint = self.paintCanvasL }
+        	else if(data.canvas == "R"){ canvasToPaint = self.paintCanvasR}
+        	else if(data.canvas == "M") {canvasToPaint = self.paintCanvasDrawable}
+
+        	canvasToPaint.Paint(data)
         })
 	}
 }
