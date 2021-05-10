@@ -19,7 +19,7 @@ class PaintScene extends Phaser.Scene{
     	this.users = 0	
     	this.UserTextArr = []
     	
-        this.io = io("https://warofart.herokuapp.com", {transports : ["websocket"]});
+        this.io = io("ws://localhost:3000", {transports : ["websocket"]});
 
         this.SocketEvents(this.io, self)
         
@@ -42,8 +42,6 @@ class PaintScene extends Phaser.Scene{
 		this.paintCanvasDrawable = new Canvas(350, 117, 18, 0.42, 2, this.io, this, "M")
 
 		this.paintCanvasDrawable.canPaint = true
-		this.paintCanvasR.canPaint = true
-		this.paintCanvasL.canPaint = true
 
 		this.drawB = new Button("smallButton", 270, 480, "D", this, function(){
         	self.PrepareSceneForDraw()
@@ -88,16 +86,20 @@ class PaintScene extends Phaser.Scene{
 	}
 
 	PrepareSceneForDraw(){
-		this.paintCanvasDrawable.SetVisible(true)
-		this.paintCanvasL.SetVisible(false)
-		this.paintCanvasR.SetVisible(false)
+		this.paintCanvasDrawable.setVisible(true)
+		this.paintCanvasL.setVisible(false)
+		this.paintCanvasR.setVisible(false)
 	}
 
 	PrepareSceneForGuess(){
 
-		this.paintCanvasDrawable.SetVisible(false)
-		this.paintCanvasL.SetVisible(true)
-		this.paintCanvasR.SetVisible(true)
+		this.paintCanvasDrawable.setVisible(false)
+		this.paintCanvasL.setVisible(true)
+		this.paintCanvasR.setVisible(true)
+	}
+
+	clear(){
+		this.graphics.clear()
 	}
 
 
@@ -134,7 +136,13 @@ class PaintScene extends Phaser.Scene{
         	else if(data.canvas == "R"){ canvasToPaint = self.paintCanvasR}
         	else if(data.canvas == "M") {canvasToPaint = self.paintCanvasDrawable}
 
-        	canvasToPaint.Paint(data)
+        	if(data.scaleFrom == "M"){
+        		canvasToPaint.paintScaled(data, self.paintCanvasDrawable)
+        	}
+        	else{
+        		self.paintCanvasDrawable.paint(data)
+        	}
+
         })
 	}
 }
