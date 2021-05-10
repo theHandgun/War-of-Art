@@ -10,6 +10,9 @@ app.listen(process.env.PORT || 3000, function()
 
 let gameState = "LOBBY";
 let connectedUsers = [];
+
+let curGuessWord
+
 let drawingPersonL;
 let drawingPersonR;
 
@@ -22,9 +25,35 @@ io.on("connection", function(socket){
 
 	socket.on("disconnect", function(){
 		console.log("User disconnected: " + socket.id)
+
+		if(gameState == "ROUND"){
+			if(socket.id == drawingPersonR.id || socket.id == drawingPersonL.id){
+				io.emit("cancel-round", "Çizim yapan oyunculardan biri veya ikisi oyunu terk etti. Yeni raunt başlıyor..")
+				gameState = "LOBBY"
+			}
+		}
+
 		connectedUsers = connectedUsers.filter(usr => usr.id != socket.id)
 		io.emit("refreshUsers", getUserList())
 	})
+
+	socket.on("start-game-request", function(){
+		AttemptStartGame(socket)
+	})
+
+	socket.on("guess-word", function(data){
+		if(gameState == "ROUND"){
+			if(socket.id != drawingPersonR.id && socket.id != drawingPersonL.id){
+				if(data == curGuessWord){
+					connectedUsers.filter(usr => usr.id == socket.id)[0].points += 10
+					io.emit("refreshUsers", getUserList())
+					socket.emit("guessed-correct")
+					// TODO: Check if the user guessed correct already.
+				}
+			}
+		}
+	})
+	
 
 	socket.on("paint", function(data){
 
@@ -33,11 +62,11 @@ io.on("connection", function(socket){
 
 		var paintSide;
 
-		if(socket.id == drawingPersonR)
+		if(socket.id == drawingPersonR.id)
 		{
 			paintSide = "R"
 		}
-		else if(socket.id == drawingPersonL){
+		else if(socket.id == drawingPersonL.id){
 			paintSide = "L"
 		}
 		else{
@@ -73,10 +102,12 @@ function StartRound(){
 
 	gameState = "ROUND"
 
+	curGuessWord = "araba"
+	io.emit("newRound", {drawerL: connectedUsers[rndL].nick, drawerR: connectedUsers[rndR].nick})
+
 	io.to(drawingPersonR.id).emit("selected-painter", "araba")
 	io.to(drawingPersonL.id).emit("selected-painter", "araba")
 
-	io.emit("newRound", {drawerL: connectedUsers[rndL].nick, drawerR: connectedUsers[rndR].nick})
 }
 
 function TryAcceptUser(sessionID, nickname){
@@ -92,7 +123,7 @@ function TryAcceptUser(sessionID, nickname){
 		connectedUsers.push(new User(sessionID, nickname, 0))
 		var isHost = connectedUsers.length == 1
 
-		io.to(sessionID).emit("accepted", {id: sessionID, gameState: gameState, isHost: isHost})
+		io.to(sessionID).emit("accepted", {id: sessionID, gameState: "LOBBY", isHost: isHost})
 		io.emit("refreshUsers", getUserList())
 
 

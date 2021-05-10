@@ -24,10 +24,15 @@ class Canvas {
 
 		this.canvas = game.add.sprite(this.xPos, this.yPos, "canvas").setInteractive()
 		this.canvas.setOrigin(0,0)
+		this.canvas.setScale(this.spriteScale)
 		
 
-		this.canvas.setScale(this.spriteScale)
+		this.canvas.timer = game.add.text(this.xPos + this.canvas.displayWidth/2, this.yPos + this.canvas.displayHeight/2, "30", {fontFamily: "Arial", fontSize: 82, color: "#000000"})
+		this.canvas.timer.setOrigin(0.5, 0.5)
+		this.canvas.timer.alpha = 0.6
 
+
+		console.log(this.canvas.displayWidth + ": W, H: " + this.canvas.displayHeight )
 		this.canvas.on("pointerover",function(pointer){
 	    	this.mouseOverCanvas = true;
 		});
@@ -97,12 +102,13 @@ class Canvas {
 	}
 
 	sendPaintMsg(_xPos, _yPos, _endX, _endY){
-		this.io.emit("paint", {xPos:_xPos, yPos:_yPos, endX: _endX, endY: _endY, id: this.id })
+		this.io.emit("paint", {xPos:_xPos, yPos:_yPos, endX: _endX, endY: _endY})
 	}
 
 	setVisible(isVisible){
 		this.canvas.visible = isVisible
 		this.graphics.visible = isVisible
+		this.canvas.timer.visible = isVisible
 	}
 
 	paintScaled(posData, canvasObj){
