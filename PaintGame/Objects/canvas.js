@@ -49,6 +49,8 @@ class Canvas {
 	}
 
 	update(game){
+		var pointer = game.input.activePointer;
+
 
 	  	if(!this.canPaint || !this.canvas.visible)
 	  	{
@@ -69,7 +71,7 @@ class Canvas {
 		var deltaY = pointerY - this.OldMouseY;
 
 
-		if(game.input.activePointer.isDown && this.canvas.mouseOverCanvas){
+		if(pointer.leftButtonDown() && this.canvas.mouseOverCanvas){
 
 			if(this.OldMouseX > this.limits.x2){ this.OldMouseX = this.limits.x2 - 1}
 			if(this.OldMouseX < this.limits.x1){ this.OldMouseX = this.limits.x1 + 1}
@@ -81,14 +83,20 @@ class Canvas {
 			if(pointerY > this.limits.y2){ pointerY = this.limits.y2 - 1}
 			if(pointerY < this.limits.y1){ pointerY = this.limits.y1 + 1}
 
-			this.SendPaintMsg(this.OldMouseX, this.OldMouseY, pointerX, pointerY)
+			this.sendPaintMsg(this.OldMouseX, this.OldMouseY, pointerX, pointerY)
+			this.paint({
+				xPos: this.OldMouseX, 
+				yPos: this.OldMouseY, 
+				endX: pointerX, 
+				endY: pointerY
+			})
 		}
 
 			this.OldMouseX = pointerX;
 			this.OldMouseY = pointerY;
 	}
 
-	SendPaintMsg(_xPos, _yPos, _endX, _endY){
+	sendPaintMsg(_xPos, _yPos, _endX, _endY){
 		this.io.emit("paint", {xPos:_xPos, yPos:_yPos, endX: _endX, endY: _endY, id: this.id })
 	}
 
@@ -124,6 +132,7 @@ class Canvas {
 		this.graphics.closePath()
 		this.graphics.strokePath()
 	}
+
 
 	static preload(game){
   		game.load.image("canvas", "PaintGame/Assets/Components/canvas.png")

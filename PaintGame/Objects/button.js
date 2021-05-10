@@ -40,6 +40,11 @@ class Button {
 		});
   	}
 
+  	setVisible(newState){
+  		this.button.visible = newState
+  		this.bText.visible = newState
+  	}
+
 	static preloadAll(game){
 	  	game.load.image("smallButton", "PaintGame/Assets/Buttons/Small/button.png")
 		game.load.image("midButton", "PaintGame/Assets/Buttons/Mid/button.png")

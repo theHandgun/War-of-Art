@@ -18,7 +18,9 @@ class PaintScene extends Phaser.Scene{
 
     	this.users = 0	
     	this.UserTextArr = []
-    	
+    	this.isHost = false
+    	this.loaded = false
+
         this.io = io("ws://localhost:3000", {transports : ["websocket"]});
 
         this.SocketEvents(this.io, self)
@@ -39,30 +41,41 @@ class PaintScene extends Phaser.Scene{
 
 		this.paintCanvasR = new Canvas(655, 35, 11.1, 0.26, 1, this.io, this, "R")
 		this.paintCanvasL = new Canvas(315, 35, 11.1, 0.26, 1, this.io, this, "L")
-		this.paintCanvasDrawable = new Canvas(350, 117, 18, 0.42, 2, this.io, this, "M")
-
+		this.paintCanvasDrawable = new Canvas(350, 100, 18, 0.42, 2, this.io, this, "M")
 		this.paintCanvasDrawable.canPaint = true
 
-		this.drawB = new Button("smallButton", 270, 480, "D", this, function(){
-        	self.PrepareSceneForDraw()
+		this.paintHeaderTxt = this.add.text(600,40, "Oyun kurucusunun oyunu başlatması bekleniyor.", { fontFamily: 'Arial', fontSize: 24, color: '#FFFFFF'})
+		this.paintWord = this.add.text(600,70, "Araba", { fontFamily: 'Arial', fontSize: 26, color: '#FF0000', fontStyle: "bold"})
+
+		this.paintHeaderTxt.setOrigin(0.5,0.5)
+		this.paintWord.setOrigin(0.5,0.5)
+
+
+		this.hostB = new Button("longButton", 610, 660, "Oyunu Başlat", this, function(){
+        	alert("Game started.")
         })
 
-        this.guessB = new Button("smallButton", 270, 580, "G", this, function(){
-        	self.PrepareSceneForGuess()
-        })
 
-		this.guessB.create()
-		this.drawB.create()
+		this.hostB.create()
+		this.hostB.setVisible(false)
 
 		this.PrepareSceneForDraw(this.graphics)
 
 
-		
+		if(this.gameState == "LOBBY"){
+        	this.PrepareSceneForLobby()
+        }
+        else{
+        	this.PrepareSceneForWait()
+        }
+
 
 		for(var i = 0; i < 12; i++){
 			this.UserTextArr[i] = this.add.text(45, 50 + (i+1)*45.2, "Empty", { fontFamily: 'Arial', fontSize: 20, color: '#00000'})
 			this.UserTextArr[i].setOrigin(0)
 		}
+
+		this.loaded = true
 		
 	}
 
@@ -86,16 +99,36 @@ class PaintScene extends Phaser.Scene{
 	}
 
 	PrepareSceneForDraw(){
-		this.paintCanvasDrawable.setVisible(true)
-		this.paintCanvasL.setVisible(false)
-		this.paintCanvasR.setVisible(false)
+		this.ShowDrawBoard(true)
+
+		this.paintHeaderTxt.visible = true
+		this.paintHeaderTxt.setText("Çizmen Gereken Kelime")
 	}
 
 	PrepareSceneForGuess(){
+		this.ShowDrawBoard(false)
+		this.paintHeaderTxt.visible = false
+	}
 
-		this.paintCanvasDrawable.setVisible(false)
-		this.paintCanvasL.setVisible(true)
-		this.paintCanvasR.setVisible(true)
+	PrepareSceneForLobby(){
+		this.ShowDrawBoard(true)
+
+		this.paintHeaderTxt.visible = true
+		this.paintHeaderTxt.setText("Oyun kurucusunun oyunu başlatması bekleniyor.")
+		this.paintWord.setText("")
+		this.hostB.setVisible(this.isHost)
+		
+	}
+
+	PrepareSceneForWait(){
+		ShowDrawBoard(true)
+		this.paintHeaderTxt.setText("Sıradaki tura girmek için lütfen bekle.")
+	}
+
+	ShowDrawBoard(isDrawing){
+		this.paintCanvasDrawable.setVisible(isDrawing)
+		this.paintCanvasL.setVisible(!isDrawing)
+		this.paintCanvasR.setVisible(!isDrawing)
 	}
 
 	clear(){
@@ -110,13 +143,14 @@ class PaintScene extends Phaser.Scene{
         })
 
         io.on("accepted", function(data){
-        	
-        	self.users = data.users
+
         	self.id = data.id
+        	self.gameState = data.gameState
+        	self.isHost = data.isHost
+
         })
 
         io.on("rejected", function(data){
-        	alert(data)
         	self.scene.start("MainScene")
         })
 
@@ -125,7 +159,17 @@ class PaintScene extends Phaser.Scene{
         })
 
         io.on("newHost", function(data){
+        	if(data.nick == self.registry.get("nickname")){
+        		self.isHost = true
 
+        		if(self.gameState == "LOBBY" && self.loaded){
+        			self.PrepareSceneForLobby()
+        		}
+        	}
+        	else{
+        		self.isHost = false
+        		self.hostB.setVisible(false)
+        	}
         })
 
         io.on("paint-response", function(data)

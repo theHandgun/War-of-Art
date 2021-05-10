@@ -8,10 +8,10 @@ app.listen(process.env.PORT || 3000, function()
 		console.log("Server started.")
 	});
 
-let connectedUsers = []
 let gameState = "LOBBY";
-
-let drawingPersons = [];
+let connectedUsers = [];
+let drawingPersonL;
+let drawingPersonR;
 
 
 io.on("connection", function(socket){
@@ -27,11 +27,57 @@ io.on("connection", function(socket){
 	})
 
 	socket.on("paint", function(data){
-		io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: "R", scaleFrom: "M" })
-		socket.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: "M"})
+
+		if(gameState != "ROUND")
+			return
+
+		var paintSide;
+
+		if(socket.id == drawingPersonR)
+		{
+			paintSide = "R"
+		}
+		else if(socket.id == drawingPersonL){
+			paintSide = "L"
+		}
+		else{
+			return;
+		}
+
+		io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: paintSide})
 	})
 
 });
+
+function AttemptStartGame(socket){
+	if(connectedUsers[0].id == socket.id){
+		if(connectedUsers.length >= 3){
+			StartRound();
+		}
+		else{
+			socket.emit("rejected", "Yetersiz oyuncu sayısı!")
+		}
+	}
+}
+
+function StartRound(){
+	var rndL = Math.floor(Math.random() * connectedUsers.length)
+	var rndR = Math.floor(Math.random() * connectedUsers.length)
+
+	if(rndL == rndR){
+		rndR -= 1
+	}
+
+	drawingPersonL = connectedUsers[rndL]
+	drawingPersonR = connectedUsers[rndR]
+
+	gameState = "ROUND"
+
+	io.to(drawingPersonR.id).emit("selected-painter", "araba")
+	io.to(drawingPersonL.id).emit("selected-painter", "araba")
+
+	io.emit("newRound", {drawerL: connectedUsers[rndL].nick, drawerR: connectedUsers[rndR].nick})
+}
 
 function TryAcceptUser(sessionID, nickname){
 
@@ -44,8 +90,12 @@ function TryAcceptUser(sessionID, nickname){
 	if(nickname != null && nickname.length > 0 && nickname.length < 12)
 	{
 		connectedUsers.push(new User(sessionID, nickname, 0))
-		io.to(sessionID).emit("accepted", {users: getUserList(), id: sessionID})
+		var isHost = connectedUsers.length == 1
+
+		io.to(sessionID).emit("accepted", {id: sessionID, gameState: gameState, isHost: isHost})
 		io.emit("refreshUsers", getUserList())
+
+
 		console.log("User accepted: " + sessionID)
 	}
 	else{
