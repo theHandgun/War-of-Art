@@ -23,7 +23,7 @@ class PaintScene extends Phaser.Scene{
 
         this.io = io("ws://localhost:3000", {transports : ["websocket"]});
 
-        this.SocketEvents(this.io, self)
+        this.SocketEvents(this.io, this)
         
     }
 
@@ -41,6 +41,10 @@ class PaintScene extends Phaser.Scene{
 
 		this.paintCanvasR = new Canvas(655, 35, 11.1, 0.26, 1, this.io, this, "R")
 		this.paintCanvasL = new Canvas(315, 35, 11.1, 0.26, 1, this.io, this, "L")
+
+		this.paintCanvasL.setVisible(false)
+		this.paintCanvasR.setVisible(false)
+
 		this.paintCanvasDrawable = new Canvas(350, 100, 18, 0.42, 2, this.io, this, "M")
 		this.paintCanvasDrawable.canPaint = true
 
@@ -50,38 +54,36 @@ class PaintScene extends Phaser.Scene{
 		this.paintWord = this.add.text(600,70, "Araba", { fontFamily: 'Arial', fontSize: 26, color: '#FF0000', fontStyle: "bold"})
 
 		this.paintHeaderTxt.setOrigin(0.5,0.5)
+		this.paintHeaderTxt.setText("Oyun kurucusunun oyunu başlatması bekleniyor.")
+
 		this.paintWord.setOrigin(0.5,0.5)
+		this.paintWord.setText("")
+
+	
 
 
 		this.hostB = new Button("longButton", 610, 660, "Oyunu Başlat", this, function(){
-			self.io.emit("start-game-request", {})
+			self.io.emit("start-game-request")
         })
 
         this.guessB = new Button("longButton", 610, 660, "Tahmin Yap", this, function(){
 			self.io.emit("guess-word", prompt())
         })
 
-
-
 		this.hostB.create()
 		this.guessB.create()
 
 		this.guessB.setVisible(false)
-		this.hostB.setVisible(false)
-
-
-       	this.PrepareSceneForLobby()
+		console.log(this.isHost)
+		this.hostB.setVisible(this.isHost || false)
+		this.loaded = true
         
-
-
 
 		for(var i = 0; i < 12; i++){
 			this.UserTextArr[i] = this.add.text(45, 50 + (i+1)*45.2, "Empty", { fontFamily: 'Arial', fontSize: 20, color: '#00000'})
 			this.UserTextArr[i].setOrigin(0)
 		}
 
-		this.loaded = true
-		
 	}
 
 
@@ -114,12 +116,12 @@ class PaintScene extends Phaser.Scene{
 		this.guessB.setVisible(false)
 	}
 
-	PrepareSceneForGuess(){
+	PrepareSceneForGuess(canGuess){
 		this.ShowDrawBoard(false)
 		this.paintHeaderTxt.visible = false
 		this.hostB.setVisible(false)
 		this.paintWord.setText("")
-		this.guessB.setVisible(true)
+		this.guessB.setVisible(canGuess || true)
 	}
 
 	PrepareSceneForLobby(){
@@ -162,6 +164,11 @@ class PaintScene extends Phaser.Scene{
         	self.id = data.id
         	self.gameState = data.gameState
         	self.isHost = data.isHost
+        	console.log("accepted: " + self.isHost)
+
+        	if(self.loaded){
+        		self.hostB.setVisible(self.isHost)
+        	}
 
         })
 
@@ -215,6 +222,28 @@ class PaintScene extends Phaser.Scene{
         io.on("cancel-round", function(data){
         	self.PrepareSceneForLobby()
         	alert(data)
+        })
+
+        io.on("new-time", function(data){
+        	self.paintCanvasDrawable.setTimerText(data)
+        	self.paintCanvasR.setTimerText(data)
+        	self.paintCanvasL.setTimerText(data)
+        })
+
+        io.on("time-up", function(data){
+        	self.gameState = "EPIL-LOBBY"
+        	self.PrepareSceneForGuess(false)
+        })
+
+        io.on("to-lobby", function(data){
+        	self.gameState = "LOBBY"
+        	
+        	self.paintCanvasDrawable.clear()
+        	self.paintCanvasR.clear()
+        	self.paintCanvasL.clear()
+
+        	self.PrepareSceneForLobby()
+
         })
 	}
 }

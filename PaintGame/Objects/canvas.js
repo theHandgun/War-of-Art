@@ -25,14 +25,7 @@ class Canvas {
 		this.canvas = game.add.sprite(this.xPos, this.yPos, "canvas").setInteractive()
 		this.canvas.setOrigin(0,0)
 		this.canvas.setScale(this.spriteScale)
-		
-
-		this.canvas.timer = game.add.text(this.xPos + this.canvas.displayWidth/2, this.yPos + this.canvas.displayHeight/2, "30", {fontFamily: "Arial", fontSize: 82, color: "#000000"})
-		this.canvas.timer.setOrigin(0.5, 0.5)
-		this.canvas.timer.alpha = 0.6
-
-
-		console.log(this.canvas.displayWidth + ": W, H: " + this.canvas.displayHeight )
+	
 		this.canvas.on("pointerover",function(pointer){
 	    	this.mouseOverCanvas = true;
 		});
@@ -50,6 +43,11 @@ class Canvas {
 
 		this.graphics = game.add.graphics();
 		this.graphics.lineStyle(this.graphicsScale, 0xFF3300, 1);
+		
+		this.canvas.timer = game.add.text(this.xPos + this.canvas.displayWidth/2, this.yPos + this.canvas.displayHeight/2, "30", {fontFamily: "Arial", fontSize: 82, color: "#000000"})
+		this.canvas.timer.setOrigin(0.5, 0.5)
+		this.canvas.timer.alpha = 0.4
+
 		this.setVisible(true)
 	}
 
@@ -111,6 +109,10 @@ class Canvas {
 		this.canvas.timer.visible = isVisible
 	}
 
+	setTimerText(time){
+		this.canvas.timer.setText(time)
+	}
+
 	paintScaled(posData, canvasObj){
 
 		var scaleAmount = canvasObj.spriteScale / this.spriteScale
@@ -129,6 +131,10 @@ class Canvas {
 
 		this.paint(paintData)
 
+	}
+
+	clear(){
+		this.graphics.clear()
 	}
 
 	paint(data){

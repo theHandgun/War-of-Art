@@ -9,6 +9,10 @@ app.listen(process.env.PORT || 3000, function()
 	});
 
 let gameState = "LOBBY";
+let roundTimeRemaining;
+let roundTimer;
+
+
 let connectedUsers = [];
 
 let curGuessWord
@@ -78,6 +82,12 @@ io.on("connection", function(socket){
 
 });
 
+function ToLobby(){
+	console.log("To lobby we go")
+	gameState = "LOBBY"
+	io.emit("to-lobby")
+}
+
 function AttemptStartGame(socket){
 	if(connectedUsers[0].id == socket.id){
 		if(connectedUsers.length >= 3){
@@ -93,8 +103,12 @@ function StartRound(){
 	var rndL = Math.floor(Math.random() * connectedUsers.length)
 	var rndR = Math.floor(Math.random() * connectedUsers.length)
 
-	if(rndL == rndR){
+	if(rndL == rndR && rndL != 0){
 		rndR -= 1
+	}
+	
+	if(rndL == rndR && rndL == 0){
+		rndR += 1
 	}
 
 	drawingPersonL = connectedUsers[rndL]
@@ -103,10 +117,27 @@ function StartRound(){
 	gameState = "ROUND"
 
 	curGuessWord = "araba"
-	io.emit("newRound", {drawerL: connectedUsers[rndL].nick, drawerR: connectedUsers[rndR].nick})
+	io.emit("newRound", {drawerL: drawingPersonL.nick, drawerR: drawingPersonR.nick})
 
 	io.to(drawingPersonR.id).emit("selected-painter", "araba")
 	io.to(drawingPersonL.id).emit("selected-painter", "araba")
+
+	roundTimeRemaining = 30
+
+	roundTimer = setInterval(
+		function(){
+		  	if(roundTimeRemaining <= 0){
+		  		console.log("Time out.")
+		    	roundTimeRemaining = 30
+		    	io.emit("time-up")
+		    	gameState = "EPIL-ROUND"
+		    	setInterval(ToLobby, 5000)
+		    	clearInterval(roundTimer);
+		  	}
+
+		  	roundTimeRemaining -= 1
+		  	io.emit("new-time", roundTimeRemaining)
+		}, 1000);
 
 }
 
@@ -121,9 +152,8 @@ function TryAcceptUser(sessionID, nickname){
 	if(nickname != null && nickname.length > 0 && nickname.length < 12)
 	{
 		connectedUsers.push(new User(sessionID, nickname, 0))
-		var isHost = connectedUsers.length == 1
 
-		io.to(sessionID).emit("accepted", {id: sessionID, gameState: "LOBBY", isHost: isHost})
+		io.to(sessionID).emit("accepted", {id: sessionID, gameState: "LOBBY", isHost: connectedUsers.length == 1})
 		io.emit("refreshUsers", getUserList())
 
 
