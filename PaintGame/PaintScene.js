@@ -50,6 +50,7 @@ class PaintScene extends Phaser.Scene{
 
 
 
+
 		this.paintHeaderTxt = this.add.text(600,40, "Oyun kurucusunun oyunu başlatması bekleniyor.", { fontFamily: 'Arial', fontSize: 24, color: '#FFFFFF'})
 		this.paintWord = this.add.text(600,70, "Araba", { fontFamily: 'Arial', fontSize: 26, color: '#FF0000', fontStyle: "bold"})
 
@@ -70,20 +71,35 @@ class PaintScene extends Phaser.Scene{
 			self.io.emit("guess-word", prompt())
         })
 
+        this.voteL = new Button("midButton", 475, 395, "Oy Ver", this, function(){
+			self.io.emit("vote", "L")
+			self.voteR.setInteractable(true)
+			self.voteL.setInteractable(false)
+        })
+
+        this.voteR = new Button("midButton", 815, 395, "Oy Ver", this, function(){
+			self.io.emit("vote", "R")
+			self.voteR.setInteractable(false)
+			self.voteL.setInteractable(true)
+        })
+
+        this.voteL.create()
+        this.voteR.create()
 		this.hostB.create()
 		this.guessB.create()
 
 		this.guessB.setVisible(false)
-		console.log(this.isHost)
 		this.hostB.setVisible(this.isHost || false)
-		this.loaded = true
-        
+        this.voteL.setVisible(false)
+        this.voteR.setVisible(false)
+
 
 		for(var i = 0; i < 12; i++){
 			this.UserTextArr[i] = this.add.text(45, 50 + (i+1)*45.2, "Empty", { fontFamily: 'Arial', fontSize: 20, color: '#00000'})
 			this.UserTextArr[i].setOrigin(0)
 		}
 
+		this.loaded = true
 	}
 
 
@@ -106,7 +122,7 @@ class PaintScene extends Phaser.Scene{
 	}
 
 	PrepareSceneForDraw(word){
-		this.ShowDrawBoard(true)
+		this.showDrawBoard(true)
 
 		this.paintHeaderTxt.setText("Çizmen Gereken Kelime")
 		this.paintWord.setText(word)
@@ -114,42 +130,69 @@ class PaintScene extends Phaser.Scene{
 		this.paintHeaderTxt.visible = true
 		this.hostB.setVisible(false)
 		this.guessB.setVisible(false)
+		this.clearCanvases()
+	}
+
+	PrepareSceneForVote(){
+		this.showDrawBoard(false)
+		this.paintHeaderTxt.visible = false
+		this.paintWord.setText("")
+		this.hostB.setVisible(false)
+		this.guessB.setVisible(false)
+
+		this.voteL.setVisible(true)
+        this.voteR.setVisible(true)
 	}
 
 	PrepareSceneForGuess(canGuess){
-		this.ShowDrawBoard(false)
+		this.showDrawBoard(false)
 		this.paintHeaderTxt.visible = false
 		this.hostB.setVisible(false)
 		this.paintWord.setText("")
 		this.guessB.setVisible(canGuess || true)
+		this.clearCanvases()
+
 	}
 
 	PrepareSceneForLobby(){
-		this.ShowDrawBoard(true)
+		this.showDrawBoard(true)
 
 		this.paintHeaderTxt.visible = true
 		this.paintHeaderTxt.setText("Oyun kurucusunun oyunu başlatması bekleniyor.")
 		this.paintWord.setText("")
 		this.hostB.setVisible(this.isHost)
+
 		this.guessB.setVisible(false)
+		this.voteL.setVisible(false)
+        this.voteR.setVisible(false)
 		
+		this.clearCanvases()
 	}
 
 	PrepareSceneForWait(){
-		this.ShowDrawBoard(true)
+		this.showDrawBoard(true)
 		this.paintHeaderTxt.setText("Sıradaki tura girmek için lütfen bekle.")
 		this.paintWord.setText("")
 		this.guessB.setVisible(false)
+		this.clearCanvases()
 	}
 
-	ShowDrawBoard(isDrawing){
+	showDrawBoard(isDrawing){
 		this.paintCanvasDrawable.setVisible(isDrawing)
 		this.paintCanvasL.setVisible(!isDrawing)
 		this.paintCanvasR.setVisible(!isDrawing)
 	}
 
-	clear(){
-		this.graphics.clear()
+	clearCanvases(){
+		this.paintCanvasDrawable.clear()
+		this.paintCanvasL.clear()
+		this.paintCanvasR.clear()
+	}
+
+	clearCanvasTimers(){
+		this.paintCanvasL.setTimerText("")
+        this.paintCanvasR.setTimerText("")
+        this.paintCanvasDrawable.setTimerText("")
 	}
 
 
@@ -164,7 +207,6 @@ class PaintScene extends Phaser.Scene{
         	self.id = data.id
         	self.gameState = data.gameState
         	self.isHost = data.isHost
-        	console.log("accepted: " + self.isHost)
 
         	if(self.loaded){
         		self.hostB.setVisible(self.isHost)
@@ -173,7 +215,6 @@ class PaintScene extends Phaser.Scene{
         })
 
         io.on("rejected", function(data){
-        	//self.scene.start("MainScene")
         	alert(data)
         })
 
@@ -232,16 +273,14 @@ class PaintScene extends Phaser.Scene{
 
         io.on("time-up", function(data){
         	self.gameState = "EPIL-LOBBY"
-        	self.PrepareSceneForGuess(false)
+        	self.PrepareSceneForVote(false)
+        	self.clearCanvasTimers()
+
         })
 
         io.on("to-lobby", function(data){
         	self.gameState = "LOBBY"
-        	
-        	self.paintCanvasDrawable.clear()
-        	self.paintCanvasR.clear()
-        	self.paintCanvasL.clear()
-
+        	self.clearCanvasTimers()
         	self.PrepareSceneForLobby()
 
         })

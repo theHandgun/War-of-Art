@@ -8,6 +8,8 @@ class Button {
 	    this.size = size
 	    this.clickFunc = clickFunc
 	    this.text = text
+
+	    this.interactable = true
 	}
 
 	create(){
@@ -23,26 +25,42 @@ class Button {
 		this.bText.setOrigin(0.5)
 
 		this.button.on("pointerover",function(pointer){
-	    	this.setTexture(self.size + "H")
+			if(self.interactable){
+	    		this.setTexture(self.size + "H")
+			}
 		});
 
 		this.button.on("pointerout",function(pointer){
-	    	this.setTexture(self.size)
+			if(self.interactable){
+	    		this.setTexture(self.size)
+			}
 		});
 
 		this.button.on("pointerdown",function(pointer){
-	    	this.setTexture(self.size + "P")
+			if(self.interactable){
+	    		this.setTexture(self.size + "P")
+			}
 		});
 
 		this.button.on("pointerup",function(pointer){
-	    	self.clickFunc()
-	    	this.setTexture(self.size)
+			if(self.interactable){
+	    		this.setTexture(self.size)
+	    		self.clickFunc()
+			}
 		});
   	}
 
   	setVisible(newState){
   		this.button.visible = newState
   		this.bText.visible = newState
+  	}
+
+  	setInteractable(newState){
+  		this.interactable = newState
+  		if(newState)
+  			this.button.setTexture(this.size)
+  		else
+  			this.button.setTexture(this.size + "P")
   	}
 
 	static preloadAll(game){

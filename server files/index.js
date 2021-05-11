@@ -1,4 +1,5 @@
 var fs = require('fs');
+var readline = require("readline")
 var http = require('http');
 var app = http.createServer();
 var io = require('socket.io')(app);
@@ -8,17 +9,28 @@ app.listen(process.env.PORT || 3000, function()
 		console.log("Server started.")
 	});
 
-let gameState = "LOBBY";
+
+// Round timers.
 let roundTimeRemaining;
 let roundTimer;
+//---
 
-
-let connectedUsers = [];
-
-let curGuessWord
-
+// Drawers
 let drawingPersonL;
 let drawingPersonR;
+//---
+
+// Reading words from json into a variable.
+var wordData = fs.readFileSync('words.json');
+let possibleWords = JSON.parse(wordData);
+// ---
+
+let gameState = "LOBBY";
+let connectedUsers = [];
+let curGuessWord
+
+
+
 
 
 io.on("connection", function(socket){
@@ -83,7 +95,6 @@ io.on("connection", function(socket){
 });
 
 function ToLobby(){
-	console.log("To lobby we go")
 	gameState = "LOBBY"
 	io.emit("to-lobby")
 }
@@ -102,6 +113,7 @@ function AttemptStartGame(socket){
 function StartRound(){
 	var rndL = Math.floor(Math.random() * connectedUsers.length)
 	var rndR = Math.floor(Math.random() * connectedUsers.length)
+	var rndWord = Math.floor(Math.random() * possibleWords.length)
 
 	if(rndL == rndR && rndL != 0){
 		rndR -= 1
@@ -114,25 +126,38 @@ function StartRound(){
 	drawingPersonL = connectedUsers[rndL]
 	drawingPersonR = connectedUsers[rndR]
 
+	curGuessWord = possibleWords[rndWord]
+
 	gameState = "ROUND"
 
-	curGuessWord = "araba"
 	io.emit("newRound", {drawerL: drawingPersonL.nick, drawerR: drawingPersonR.nick})
 
-	io.to(drawingPersonR.id).emit("selected-painter", "araba")
-	io.to(drawingPersonL.id).emit("selected-painter", "araba")
+	io.to(drawingPersonR.id).emit("selected-painter", curGuessWord)
+	io.to(drawingPersonL.id).emit("selected-painter", curGuessWord)
 
 	roundTimeRemaining = 30
 
 	roundTimer = setInterval(
 		function(){
 		  	if(roundTimeRemaining <= 0){
-		  		console.log("Time out.")
 		    	roundTimeRemaining = 30
 		    	io.emit("time-up")
 		    	gameState = "EPIL-ROUND"
-		    	setInterval(ToLobby, 5000)
+
+		    	var lobbyTimer = setInterval(
+		    		function() 
+		    		{
+		    			ToLobby()
+		    			clearInterval(lobbyTimer)
+		    		}, 5000)
+
+
 		    	clearInterval(roundTimer);
+		    	return
+		  	}
+
+		  	if(gameState != "ROUND"){
+		  		clearInterval(roundTimer)
 		  	}
 
 		  	roundTimeRemaining -= 1

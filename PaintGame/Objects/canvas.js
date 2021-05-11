@@ -44,7 +44,7 @@ class Canvas {
 		this.graphics = game.add.graphics();
 		this.graphics.lineStyle(this.graphicsScale, 0xFF3300, 1);
 		
-		this.canvas.timer = game.add.text(this.xPos + this.canvas.displayWidth/2, this.yPos + this.canvas.displayHeight/2, "30", {fontFamily: "Arial", fontSize: 82, color: "#000000"})
+		this.canvas.timer = game.add.text(this.xPos + this.canvas.displayWidth/2, this.yPos + this.canvas.displayHeight/2, "", {fontFamily: "Arial", fontSize: 82, color: "#000000"})
 		this.canvas.timer.setOrigin(0.5, 0.5)
 		this.canvas.timer.alpha = 0.4
 
