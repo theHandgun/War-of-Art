@@ -111,7 +111,6 @@ class Canvas {
 
 	setTimerText(time){
 		this.canvas.timer.setText(time)
-		this.graphics.lineStyle(this.graphicsScale, 0xFF3300, 1);
 	}
 
 	paintScaled(posData, canvasObj){
@@ -131,11 +130,12 @@ class Canvas {
 		}
 
 		this.paint(paintData)
-
+		
 	}
 
 	clear(){
 		this.graphics.clear()
+		this.graphics.lineStyle(this.graphicsScale, 0xFF3300, 1);
 	}
 
 	paint(data){
