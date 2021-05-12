@@ -31,8 +31,6 @@ let curGuessWord
 
 
 
-
-
 io.on("connection", function(socket){
 
 	socket.on("attemptJoin", function(data){
@@ -163,6 +161,7 @@ function StartRound(){
 
 		  	if(gameState != "ROUND"){
 		  		clearInterval(roundTimer)
+		  		return
 		  	}
 
 		  	roundTimeRemaining -= 1
@@ -227,9 +226,10 @@ function getUserList(){
 }
 
 class User {
-  constructor(id, nick, points) {
+  constructor(id, nick, points, portraitIndex) {
     this.id = id;
     this.nick = nick;
     this.points = points;
+    this.portrait = portraitIndex
   }
 }

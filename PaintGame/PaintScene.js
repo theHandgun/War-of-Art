@@ -7,6 +7,7 @@ class PaintScene extends Phaser.Scene{
 	preload(){
 		Button.preloadAll(this)
 		Canvas.preload(this)
+		PortraitManager.preloadAll(this)
 
 		this.load.image("canvas", "PaintGame/Assets/Components/canvas.png")
 		this.load.image("playersContainer", "PaintGame/Assets/Components/lobby.png")
@@ -22,8 +23,9 @@ class PaintScene extends Phaser.Scene{
     	this.portrait = data.portrait
     	this.io = data.io
     	this.users = data.players
-	
+
     	this.UserTextArr = []
+    	this.PortraitArr = []
 
         this.SocketEvents(this.io, this)
         
@@ -51,8 +53,6 @@ class PaintScene extends Phaser.Scene{
 		this.paintCanvasDrawable.canPaint = true
 
 
-
-
 		this.paintHeaderTxt = this.add.text(600,40, "Oyun kurucusunun oyunu başlatması bekleniyor.", { fontFamily: 'Arial', fontSize: 24, color: '#FFFFFF'})
 		this.paintWord = this.add.text(600,70, "Araba", { fontFamily: 'Arial', fontSize: 26, color: '#FF0000', fontStyle: "bold"})
 
@@ -61,8 +61,6 @@ class PaintScene extends Phaser.Scene{
 
 		this.paintWord.setOrigin(0.5,0.5)
 		this.paintWord.setText("")
-
-	
 
 
 		this.hostB = new Button("longButton", 610, 660, "Oyunu Başlat", this, function(){
@@ -97,9 +95,15 @@ class PaintScene extends Phaser.Scene{
 
 
 		for(var i = 0; i < 12; i++){
-			this.UserTextArr[i] = this.add.text(45, 50 + (i+1)*45.2, "Empty", { fontFamily: 'Arial', fontSize: 20, color: '#00000'})
+			this.UserTextArr[i] = this.add.text(80, 50 + (i+1)*45.2, "", { fontFamily: 'Arial', fontSize: 20, color: '#00000'})
 			this.UserTextArr[i].setOrigin(0)
+
+			this.PortraitArr[i] = this.add.sprite(40, 88 + (i+i)*22.6, "")
+			this.PortraitArr[i].visible = false
+			this.PortraitArr[i].setOrigin(0, 0)
 		}
+
+		this.UpdateUserList()
 	}
 
 
@@ -111,14 +115,7 @@ class PaintScene extends Phaser.Scene{
 		this.paintCanvasR.update(this)
 		this.paintCanvasDrawable.update(this)
 
-		for(var i = 0; i < 12; i++){
-			if(this.users[i] != null){
-				this.UserTextArr[i].setText(this.users[i].nick + ": " + this.users[i].points)
-			}
-			else{
-				this.UserTextArr[i].setText("")
-			}
-		}
+		
 	}
 
 	PrepareSceneForDraw(word){
@@ -167,8 +164,9 @@ class PaintScene extends Phaser.Scene{
 		this.guessB.setVisible(false)
 		this.voteL.setVisible(false)
         this.voteR.setVisible(false)
-		
-		this.clearCanvases()
+        
+        this.clearCanvasTimers()
+		this.clearCanvases()	
 	}
 
 	PrepareSceneForWait(){
@@ -203,11 +201,29 @@ class PaintScene extends Phaser.Scene{
         this.paintCanvasDrawable.setTimerText("")
 	}
 
+	UpdateUserList(){
+		for(var i = 0; i < 12; i++){
+			if(this.users[i] != null){
+				this.UserTextArr[i].setText(this.users[i].nick + ": " + this.users[i].points)
+				this.PortraitArr[i].setTexture(this.users[i].portrait)
+				this.PortraitArr[i].visible = true
+				this.PortraitArr[i].scaleY = this.PortraitArr[i].scaleX
+				this.PortraitArr[i].displayHeight = 36
+				this.PortraitArr[i].displayWidth = 36
+			}
+			else{
+				this.UserTextArr[i].setText("")
+				this.PortraitArr[i].visible = false
+			}
+		}
+	}
+
 
 	SocketEvents(io, self){
 
         io.on("refresh-users", function(data){
         	self.users = data
+        	self.UpdateUserList()
         })
 
         io.on("new-host", function(data){

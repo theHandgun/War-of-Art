@@ -33,7 +33,7 @@ class MainScene extends Phaser.Scene{
         this.io = io("ws://localhost:3000", {transports : ["websocket"]});
 
         this.io.on("connect", function(socket){
-        	this.emit("attemptJoin", {nick: self.registry.get("nickname"), portrait: self.portrait.getPortraitID()})
+        	this.emit("attemptJoin", {nick: self.registry.get("nickname"), portrait: self.portrait.getPortrait()})
         })
 
         this.io.on("accepted", function(data){
@@ -42,7 +42,7 @@ class MainScene extends Phaser.Scene{
         		id: data.id,
         	 	gameState: data.gameState,
         	 	isHost: data.isHost,
-        	 	portrait: self.portrait.getPortraitID(),
+        	 	portrait: self.portrait.getPortrait(),
         	 	io: self.io,
         	 	players: data.players
         	 })

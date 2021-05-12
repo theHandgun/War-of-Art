@@ -55,8 +55,8 @@ class PortraitManager{
 		this.back.create(this.game)  
 	}
 
-	getPortraitID(){
-		return this.selectedIndex
+	getPortrait(){
+		return this.portArray[this.selectedIndex].img
 	}
 
 	selectNewPortrait(newIndex){
