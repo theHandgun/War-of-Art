@@ -36,7 +36,7 @@ let curGuessWord
 io.on("connection", function(socket){
 
 	socket.on("attemptJoin", function(data){
-		TryAcceptUser(socket.id, data.nick)
+		TryAcceptUser(socket.id, data.nick, data.portrait)
 	})
 
 	socket.on("disconnect", function(){
@@ -48,9 +48,15 @@ io.on("connection", function(socket){
 				gameState = "LOBBY"
 			}
 		}
+		
+		if(connectedUsers[0].id == socket.id && connectedUsers.length != 1){
+			io.emit("new-host", {nick: connectedUsers[1].nick})
+		}
 
 		connectedUsers = connectedUsers.filter(usr => usr.id != socket.id)
-		io.emit("refreshUsers", getUserList())
+
+
+		io.emit("refresh-users", getUserList())
 	})
 
 	socket.on("start-game-request", function(){
@@ -62,11 +68,20 @@ io.on("connection", function(socket){
 			if(socket.id != drawingPersonR.id && socket.id != drawingPersonL.id){
 				if(data == curGuessWord){
 					connectedUsers.filter(usr => usr.id == socket.id)[0].points += 10
-					io.emit("refreshUsers", getUserList())
+					io.emit("refresh-users", getUserList())
 					socket.emit("guessed-correct")
 					// TODO: Check if the user guessed correct already.
 				}
 			}
+		}
+	})
+
+	socket.on("vote", function(data){
+		if(data == "R"){
+			connectedUsers.filter(usr => usr.id == socket.id)[0].lastVote = "R"
+		}
+		else if(data == "L"){
+			connectedUsers.filter(usr => usr.id == socket.id)[0].lastVote = "L"
 		}
 	})
 	
@@ -130,7 +145,7 @@ function StartRound(){
 
 	gameState = "ROUND"
 
-	io.emit("newRound", {drawerL: drawingPersonL.nick, drawerR: drawingPersonR.nick})
+	io.emit("new-round", {drawerL: drawingPersonL.nick, drawerR: drawingPersonR.nick})
 
 	io.to(drawingPersonR.id).emit("selected-painter", curGuessWord)
 	io.to(drawingPersonL.id).emit("selected-painter", curGuessWord)
@@ -140,18 +155,8 @@ function StartRound(){
 	roundTimer = setInterval(
 		function(){
 		  	if(roundTimeRemaining <= 0){
-		    	roundTimeRemaining = 30
-		    	io.emit("time-up")
-		    	gameState = "EPIL-ROUND"
-
-		    	var lobbyTimer = setInterval(
-		    		function() 
-		    		{
-		    			ToLobby()
-		    			clearInterval(lobbyTimer)
-		    		}, 5000)
-
-
+		    	
+		    	EndOfPainting()
 		    	clearInterval(roundTimer);
 		    	return
 		  	}
@@ -166,7 +171,30 @@ function StartRound(){
 
 }
 
-function TryAcceptUser(sessionID, nickname){
+function EndOfPainting(){
+	io.emit("time-up")
+	gameState = "EPIL-ROUND"
+
+	var voteTimer = setInterval(
+		function() 
+		{
+
+			var RVoters = connectedUsers.filter(usr => usr.lastVote == "R")
+			var LVoters = connectedUsers.filter(usr => usr.lastVote == "L")
+
+			drawingPersonR.points += RVoters.length*10
+			drawingPersonL.points += LVoters.length*10
+
+			io.emit("refresh-users", getUserList())
+			io.emit("vote-results", {R: RVoters, L:LVoters})
+
+			var lobbyTimer = setInterval(function() {ToLobby(); clearInterval(lobbyTimer);}, 5000)
+		
+		   	clearInterval(voteTimer)
+		}, 5000)
+}
+
+function TryAcceptUser(sessionID, nickname, portraitIndex){
 
 
 	if(gameState != "LOBBY"){
@@ -176,10 +204,11 @@ function TryAcceptUser(sessionID, nickname){
 
 	if(nickname != null && nickname.length > 0 && nickname.length < 12)
 	{
-		connectedUsers.push(new User(sessionID, nickname, 0))
+		connectedUsers.push(new User(sessionID, nickname, 0, portraitIndex))
 
-		io.to(sessionID).emit("accepted", {id: sessionID, gameState: "LOBBY", isHost: connectedUsers.length == 1})
-		io.emit("refreshUsers", getUserList())
+		var userList = getUserList()
+		io.to(sessionID).emit("accepted", {id: sessionID, gameState: "LOBBY", isHost: connectedUsers.length == 1, players: userList})
+		io.emit("refresh-users", getUserList())
 
 
 		console.log("User accepted: " + sessionID)
@@ -192,7 +221,7 @@ function TryAcceptUser(sessionID, nickname){
 function getUserList(){
 	let usrList = []
 	for(var i = 0; i < connectedUsers.length; i++){
-		usrList.push({nick: connectedUsers[i].nick, points: connectedUsers[i].points})
+		usrList.push({nick: connectedUsers[i].nick, points: connectedUsers[i].points, portrait: connectedUsers[i].portrait})
 	}
 	return usrList
 }

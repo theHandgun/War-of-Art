@@ -12,16 +12,18 @@ class PaintScene extends Phaser.Scene{
 		this.load.image("playersContainer", "PaintGame/Assets/Components/lobby.png")
 	}
 
-	init()
+	init(data)
     {
     	var self = this
 
-    	this.users = 0	
+    	this.id = data.id
+    	this.gameState = data.gameState
+    	this.isHost = data.isHost
+    	this.portrait = data.portrait
+    	this.io = data.io
+    	this.users = data.players
+	
     	this.UserTextArr = []
-    	this.isHost = false
-    	this.loaded = false
-
-        this.io = io("ws://localhost:3000", {transports : ["websocket"]});
 
         this.SocketEvents(this.io, this)
         
@@ -98,8 +100,6 @@ class PaintScene extends Phaser.Scene{
 			this.UserTextArr[i] = this.add.text(45, 50 + (i+1)*45.2, "Empty", { fontFamily: 'Arial', fontSize: 20, color: '#00000'})
 			this.UserTextArr[i].setOrigin(0)
 		}
-
-		this.loaded = true
 	}
 
 
@@ -140,8 +140,10 @@ class PaintScene extends Phaser.Scene{
 		this.hostB.setVisible(false)
 		this.guessB.setVisible(false)
 
-		this.voteL.setVisible(true)
-        this.voteR.setVisible(true)
+		if(!this.isDrawing){
+			this.voteL.setVisible(true)
+	        this.voteR.setVisible(true)
+	    }
 	}
 
 	PrepareSceneForGuess(canGuess){
@@ -176,6 +178,12 @@ class PaintScene extends Phaser.Scene{
 		this.guessB.setVisible(false)
 		this.clearCanvases()
 	}
+	PrepreSceneForVoteResults(votersData){
+		this.voteL.setVisible(false)
+		this.voteR.setVisible(false)
+		this.voteL.setInteractable(true)
+		this.voteR.setInteractable(true)
+	}
 
 	showDrawBoard(isDrawing){
 		this.paintCanvasDrawable.setVisible(isDrawing)
@@ -198,35 +206,15 @@ class PaintScene extends Phaser.Scene{
 
 	SocketEvents(io, self){
 
-		io.on("connect", function(socket){
-        	this.emit("attemptJoin", {nick: self.registry.get("nickname")})
-        })
-
-        io.on("accepted", function(data){
-
-        	self.id = data.id
-        	self.gameState = data.gameState
-        	self.isHost = data.isHost
-
-        	if(self.loaded){
-        		self.hostB.setVisible(self.isHost)
-        	}
-
-        })
-
-        io.on("rejected", function(data){
-        	alert(data)
-        })
-
-        io.on("refreshUsers", function(data){
+        io.on("refresh-users", function(data){
         	self.users = data
         })
 
-        io.on("newHost", function(data){
+        io.on("new-host", function(data){
         	if(data.nick == self.registry.get("nickname")){
         		self.isHost = true
 
-        		if(self.gameState == "LOBBY" && self.loaded){
+        		if(self.gameState == "LOBBY"){
         			self.PrepareSceneForLobby()
         		}
         	}
@@ -236,11 +224,13 @@ class PaintScene extends Phaser.Scene{
         	}
         })
 
-        io.on("newRound", function(data){
+        io.on("new-round", function(data){
+        	self.isDrawing = false
         	self.PrepareSceneForGuess()
         })
 
         io.on("selected-painter", function(data){
+        	self.isDrawing = true
         	self.PrepareSceneForDraw(data)
         })
 
@@ -282,7 +272,10 @@ class PaintScene extends Phaser.Scene{
         	self.gameState = "LOBBY"
         	self.clearCanvasTimers()
         	self.PrepareSceneForLobby()
+        })
 
+        io.on("vote-results", function(data){
+        	self.PrepreSceneForVoteResults()
         })
 	}
 }
