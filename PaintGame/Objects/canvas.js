@@ -14,6 +14,7 @@ class Canvas {
 	    this.id = id
 
 	    this.canPaint = false
+	    this.color = 0x000000
 
 	    this.create(game)
 
@@ -86,12 +87,13 @@ class Canvas {
 			if(pointerY > this.limits.y2){ pointerY = this.limits.y2 - 1}
 			if(pointerY < this.limits.y1){ pointerY = this.limits.y1 + 1}
 
-			this.sendPaintMsg(this.OldMouseX, this.OldMouseY, pointerX, pointerY)
+			this.sendPaintMsg(this.OldMouseX, this.OldMouseY, pointerX, pointerY, this.toolboxObj.color)
 			this.paint({
 				xPos: this.OldMouseX, 
 				yPos: this.OldMouseY, 
 				endX: pointerX, 
-				endY: pointerY
+				endY: pointerY,
+				color: this.toolboxObj.color
 			})
 		}
 
@@ -99,14 +101,17 @@ class Canvas {
 			this.OldMouseY = pointerY;
 	}
 
-	sendPaintMsg(_xPos, _yPos, _endX, _endY){
-		this.io.emit("paint", {xPos:_xPos, yPos:_yPos, endX: _endX, endY: _endY})
+	sendPaintMsg(_xPos, _yPos, _endX, _endY, color){
+		this.io.emit("paint", {xPos:_xPos, yPos:_yPos, endX: _endX, endY: _endY, color: color })
 	}
 
 	setVisible(isVisible){
 		this.canvas.visible = isVisible
 		this.graphics.visible = isVisible
 		this.canvas.timer.visible = isVisible
+		
+		if(this.toolboxObj)
+			this.toolboxObj.setVisible(isVisible)
 
 		if(this.toolboxObj != null)
 		{
@@ -122,20 +127,21 @@ class Canvas {
 		this.canvas.timer.setText(time)
 	}
 
-	paintScaled(posData, canvasObj){
+	paintScaled(data, canvasObj){
 
 		var scaleAmount = canvasObj.spriteScale / this.spriteScale
 
-		var x = (posData.xPos - canvasObj.canvas.x) / scaleAmount
-		var y = (posData.yPos - canvasObj.canvas.y) / scaleAmount
-		var x2 = (posData.endX - canvasObj.canvas.x) / scaleAmount
-		var y2 = (posData.endY - canvasObj.canvas.y) / scaleAmount
+		var x = (data.xPos - canvasObj.canvas.x) / scaleAmount
+		var y = (data.yPos - canvasObj.canvas.y) / scaleAmount
+		var x2 = (data.endX - canvasObj.canvas.x) / scaleAmount
+		var y2 = (data.endY - canvasObj.canvas.y) / scaleAmount
 
 		var paintData = {
 			xPos: this.canvas.x + x,
 			yPos: this.canvas.y + y,
 			endX: this.canvas.x + x2,
-			endY: this.canvas.y + y2
+			endY: this.canvas.y + y2,
+			color: data.color
 		}
 
 		this.paint(paintData)
@@ -144,10 +150,11 @@ class Canvas {
 
 	clear(){
 		this.graphics.clear()
-		this.graphics.lineStyle(this.graphicsScale, 0xFF3300, 1);
+		this.graphics.lineStyle(this.graphicsScale, this.toolbox.color, 1);
 	}
 
 	paint(data){
+		this.graphics.lineStyle(this.graphicsScale, data.color, 1);
 		this.graphics.beginPath()
 		this.graphics.moveTo(data.xPos, data.yPos)
 		this.graphics.lineTo(data.endX, data.endY)

@@ -101,8 +101,7 @@ io.on("connection", function(socket){
 		else{
 			return;
 		}
-
-		io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: paintSide})
+		io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: paintSide, color: data.color})
 	})
 
 });
