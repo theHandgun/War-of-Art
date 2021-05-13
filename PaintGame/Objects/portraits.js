@@ -19,7 +19,8 @@ class PortraitManager{
 			{img: "maul", name: "Darth Maul"},
 			{img: "pala", name: "Pala"},
 			{img: "polat", name: "Polat Alemdar"},
-			{img: "necmi", name: "Testere Necmi"}
+			{img: "necmi", name: "Testere Necmi"},
+			{img: "50 kuruş", name: "50 Kuruş"}
 		]
 
 		this.selectedIndex = 0
@@ -87,5 +88,6 @@ class PortraitManager{
 		game.load.image("pala", "PaintGame/Assets/Portraits/pala.jpg")
 		game.load.image("polat", "PaintGame/Assets/Portraits/polat.jpg")
 		game.load.image("necmi", "PaintGame/Assets/Portraits/necmi.jpg")
+		game.load.image("50 kuruş", "PaintGame/Assets/Portraits/50 kuruş.png")
 	}
 }
