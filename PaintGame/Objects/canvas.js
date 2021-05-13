@@ -107,6 +107,15 @@ class Canvas {
 		this.canvas.visible = isVisible
 		this.graphics.visible = isVisible
 		this.canvas.timer.visible = isVisible
+
+		if(this.toolboxObj != null)
+		{
+			this.toolboxObj.toolbox.visible = isVisible
+		}
+	}
+
+	setToolbox(toolboxObject){
+		this.toolboxObj = toolboxObject
 	}
 
 	setTimerText(time){

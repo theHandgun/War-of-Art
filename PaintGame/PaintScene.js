@@ -8,6 +8,7 @@ class PaintScene extends Phaser.Scene{
 		Button.preloadAll(this)
 		Canvas.preload(this)
 		PortraitManager.preloadAll(this)
+		Toolbox.preload(this)
 
 		this.load.image("canvas", "PaintGame/Assets/Components/canvas.png")
 		this.load.image("playersContainer", "PaintGame/Assets/Components/lobby.png")
@@ -51,7 +52,7 @@ class PaintScene extends Phaser.Scene{
 
 		this.paintCanvasDrawable = new Canvas(350, 100, 18, 0.42, 2, this.io, this, "M")
 		this.paintCanvasDrawable.canPaint = true
-
+		this.paintCanvasDrawable.setToolbox(new Toolbox(920, 350, this))
 
 		this.paintHeaderTxt = this.add.text(600,40, "Oyun kurucusunun oyunu başlatması bekleniyor.", { fontFamily: 'Arial', fontSize: 24, color: '#FFFFFF'})
 		this.paintWord = this.add.text(600,70, "Araba", { fontFamily: 'Arial', fontSize: 26, color: '#FF0000', fontStyle: "bold"})
@@ -61,6 +62,8 @@ class PaintScene extends Phaser.Scene{
 
 		this.paintWord.setOrigin(0.5,0.5)
 		this.paintWord.setText("")
+
+
 
 
 		this.hostB = new Button("longButton", 610, 660, "Oyunu Başlat", this, function(){
