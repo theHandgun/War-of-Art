@@ -137,7 +137,6 @@ function StartRound(){
 
 	drawingPersonL = connectedUsers[rndL]
 	drawingPersonR = connectedUsers[rndR]
-
 	curGuessWord = possibleWords[rndWord]
 
 	gameState = "ROUND"

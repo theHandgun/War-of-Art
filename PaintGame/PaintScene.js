@@ -9,6 +9,7 @@ class PaintScene extends Phaser.Scene{
 		Canvas.preload(this)
 		PortraitManager.preloadAll(this)
 		Toolbox.preload(this)
+		Chat.preload(this)
 
 		this.load.image("canvas", "PaintGame/Assets/Components/canvas.png")
 		this.load.image("playersContainer", "PaintGame/Assets/Components/lobby.png")
@@ -54,6 +55,10 @@ class PaintScene extends Phaser.Scene{
 		this.paintCanvasDrawable.canPaint = true
 		this.paintCanvasDrawable.setToolbox(new Toolbox(920, 350, this))
 
+
+		this.chat = new Chat(635, 550, this)
+		this.chat.setVisible(false)
+
 		this.paintHeaderTxt = this.add.text(600,40, "Oyun kurucusunun oyunu başlatması bekleniyor.", { fontFamily: 'Arial', fontSize: 24, color: '#FFFFFF'})
 		this.paintWord = this.add.text(600,70, "Araba", { fontFamily: 'Arial', fontSize: 26, color: '#FF0000', fontStyle: "bold"})
 
@@ -70,7 +75,7 @@ class PaintScene extends Phaser.Scene{
 			self.io.emit("start-game-request")
         })
 
-        this.guessB = new Button("longButton", 610, 660, "Tahmin Yap", this, function(){
+        this.guessB = new Button("longButton", 660, 660, "Tahmin Yap", this, function(){
 			self.io.emit("guess-word", prompt())
         })
 
@@ -144,6 +149,8 @@ class PaintScene extends Phaser.Scene{
 			this.voteL.setVisible(true)
 	        this.voteR.setVisible(true)
 	    }
+
+
 	}
 
 	PrepareSceneForGuess(canGuess){
@@ -152,6 +159,7 @@ class PaintScene extends Phaser.Scene{
 		this.hostB.setVisible(false)
 		this.paintWord.setText("")
 		this.guessB.setVisible(canGuess || true)
+		this.chat.setVisible(true)
 		this.clearCanvases()
 
 	}
@@ -167,9 +175,11 @@ class PaintScene extends Phaser.Scene{
 		this.guessB.setVisible(false)
 		this.voteL.setVisible(false)
         this.voteR.setVisible(false)
+		this.chat.setVisible(false)
         
         this.clearCanvasTimers()
 		this.clearCanvases()	
+
 	}
 
 	PrepareSceneForWait(){
