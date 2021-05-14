@@ -150,7 +150,8 @@ class Canvas {
 
 	clear(){
 		this.graphics.clear()
-		this.graphics.lineStyle(this.graphicsScale, this.toolbox.color, 1);
+		var color = (this.toolboxObj) ? this.toolboxObj.color:0x000000
+		this.graphics.lineStyle(this.graphicsScale, color, 1);
 	}
 
 	paint(data){

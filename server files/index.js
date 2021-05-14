@@ -46,9 +46,10 @@ io.on("connection", function(socket){
 				gameState = "LOBBY"
 			}
 		}
-		
-		if(connectedUsers[0].id == socket.id && connectedUsers.length != 1){
-			io.emit("new-host", {nick: connectedUsers[1].nick})
+		if(connectedUsers[0]){
+			if(connectedUsers[0].id == socket.id && connectedUsers.length != 1){
+				io.emit("new-host", {nick: connectedUsers[1].nick})
+			}
 		}
 
 		connectedUsers = connectedUsers.filter(usr => usr.id != socket.id)
@@ -64,11 +65,16 @@ io.on("connection", function(socket){
 	socket.on("guess-word", function(data){
 		if(gameState == "ROUND"){
 			if(socket.id != drawingPersonR.id && socket.id != drawingPersonL.id){
+				var userName = connectedUsers.filter(usr => usr.id == socket.id)[0].nick
 				if(data == curGuessWord){
+					emitText(userName + " kelimeyi buldu!")
 					connectedUsers.filter(usr => usr.id == socket.id)[0].points += 10
 					io.emit("refresh-users", getUserList())
 					socket.emit("guessed-correct")
 					// TODO: Check if the user guessed correct already.
+				}
+				else{
+					emitText(data, userName)
 				}
 			}
 		}
@@ -221,6 +227,17 @@ function getUserList(){
 		usrList.push({nick: connectedUsers[i].nick, points: connectedUsers[i].points, portrait: connectedUsers[i].portrait})
 	}
 	return usrList
+}
+
+function emitText(message, sender){
+
+	io.emit("chat-text", {	
+		type: (sender == null) ? "SYSTEM":null,
+		message: message,
+		sender: sender
+	})
+
+	console.log()
 }
 
 class User {

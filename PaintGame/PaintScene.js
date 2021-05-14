@@ -56,7 +56,7 @@ class PaintScene extends Phaser.Scene{
 		this.paintCanvasDrawable.setToolbox(new Toolbox(920, 350, this))
 
 
-		this.chat = new Chat(635, 550, this)
+		this.chat = new Chat(400, 420, this)
 		this.chat.setVisible(false)
 
 		this.paintHeaderTxt = this.add.text(600,40, "Oyun kurucusunun oyunu başlatması bekleniyor.", { fontFamily: 'Arial', fontSize: 24, color: '#FFFFFF'})
@@ -75,17 +75,18 @@ class PaintScene extends Phaser.Scene{
 			self.io.emit("start-game-request")
         })
 
-        this.guessB = new Button("longButton", 660, 660, "Tahmin Yap", this, function(){
-			self.io.emit("guess-word", prompt())
+        this.guessB = new Button("longButton", 645, 660, "Tahmin Yap", this, function(){
+        	var guessWord = prompt()
+			self.io.emit("guess-word", guessWord)
         })
 
-        this.voteL = new Button("midButton", 475, 395, "Oy Ver", this, function(){
+        this.voteL = new Button("midButton", 475, 385, "Oy Ver", this, function(){
 			self.io.emit("vote", "L")
 			self.voteR.setInteractable(true)
 			self.voteL.setInteractable(false)
         })
 
-        this.voteR = new Button("midButton", 815, 395, "Oy Ver", this, function(){
+        this.voteR = new Button("midButton", 815, 385, "Oy Ver", this, function(){
 			self.io.emit("vote", "R")
 			self.voteR.setInteractable(false)
 			self.voteL.setInteractable(true)
@@ -135,6 +136,7 @@ class PaintScene extends Phaser.Scene{
 		this.paintHeaderTxt.visible = true
 		this.hostB.setVisible(false)
 		this.guessB.setVisible(false)
+		this.chat.setVisible(false)
 		this.clearCanvases()
 	}
 
@@ -144,6 +146,7 @@ class PaintScene extends Phaser.Scene{
 		this.paintWord.setText("")
 		this.hostB.setVisible(false)
 		this.guessB.setVisible(false)
+		
 
 		if(!this.isDrawing){
 			this.voteL.setVisible(true)
@@ -189,11 +192,13 @@ class PaintScene extends Phaser.Scene{
 		this.guessB.setVisible(false)
 		this.clearCanvases()
 	}
+
 	PrepreSceneForVoteResults(votersData){
 		this.voteL.setVisible(false)
 		this.voteR.setVisible(false)
 		this.voteL.setInteractable(true)
 		this.voteR.setInteractable(true)
+		this.chat.setVisible(true)
 	}
 
 	showDrawBoard(isDrawing){
@@ -305,6 +310,12 @@ class PaintScene extends Phaser.Scene{
 
         io.on("vote-results", function(data){
         	self.PrepreSceneForVoteResults()
+        })
+
+        io.on("chat-text", function(data){
+        	// TODO: Don't send data from server in the first place.
+        	if(!self.isDrawing)
+        		self.chat.addText(data)
         })
 	}
 }

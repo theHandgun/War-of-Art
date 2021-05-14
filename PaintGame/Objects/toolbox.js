@@ -48,7 +48,7 @@ class Toolbox{
 
 		this.selectedClrImg = game.add.sprite(this.xPos, this.yPos - 200, "box")
 		this.selectedClrImg.setScale(1.6)
-		this.selectedClrImg.tint = 0xFFFFFF
+		this.selectedClrImg.tint = 0x000000
 		
 	}
 
