@@ -68,9 +68,6 @@ class PaintScene extends Phaser.Scene{
 		this.paintWord.setOrigin(0.5,0.5)
 		this.paintWord.setText("")
 
-
-
-
 		this.hostB = new Button("longButton", 610, 660, "Oyunu Başlat", this, function(){
 			self.io.emit("start-game-request")
         })
@@ -112,6 +109,23 @@ class PaintScene extends Phaser.Scene{
 			this.PortraitArr[i].setOrigin(0, 0)
 		}
 
+		this.versusImageL = this.add.sprite(450, 200, "")
+		this.versusImageL.visible = false
+
+		this.versusImageR = this.add.sprite(830, 200, "")
+		this.versusImageR.visible = false
+
+		this.versusTextL = this.add.text(450, 350, "asds", {fontFamily: "Arial", fontSize: 30})
+		this.versusTextL.visible = true
+		this.versusTextL.setOrigin(0.5,0.5)
+
+		this.versusTextR = this.add.text(830, 350, "adsds", {fontFamily: "Arial", fontSize: 30})
+		this.versusTextR.visible = true
+		this.versusTextR.setOrigin(0.5,0.5)
+
+		this.versusTxt = this.add.text(600, 150, "VS", {fontFamily: "Arial", fontSize: 36, fontStyle:"bold"})
+		this.versusTxt.visible = true
+
 		this.UpdateUserList()
 	}
 
@@ -124,7 +138,6 @@ class PaintScene extends Phaser.Scene{
 		this.paintCanvasR.update(this)
 		this.paintCanvasDrawable.update(this)
 
-		
 	}
 
 	PrepareSceneForDraw(word){
@@ -137,6 +150,8 @@ class PaintScene extends Phaser.Scene{
 		this.hostB.setVisible(false)
 		this.guessB.setVisible(false)
 		this.chat.setVisible(false)
+		this.versusImageR.visible = false
+		this.versusImageL.visible = false
 		this.clearCanvases()
 	}
 
@@ -146,14 +161,38 @@ class PaintScene extends Phaser.Scene{
 		this.paintWord.setText("")
 		this.hostB.setVisible(false)
 		this.guessB.setVisible(false)
-		
+		this.chat.setVisible(true)
 
+		this.chat.clearChat()
 		if(!this.isDrawing){
 			this.voteL.setVisible(true)
 	        this.voteR.setVisible(true)
 	    }
+	}
+
+	PrepareSceneForVersus(data){
+		this.paintCanvasDrawable.setVisible(false)
+		this.paintCanvasL.setVisible(false)
+		this.paintCanvasR.setVisible(false)
+		this.chat.setVisible(true)
+		this.paintHeaderTxt.setText("")
+
+		var drawingR = this.users.filter(usr => usr.nick == data.drawerR)[0]
+		var drawingL = this.users.filter(usr => usr.nick == data.drawerR)[0]
+		console.log(drawingR.nick)
+		this.versusImageR.setTexture(drawingR.portrait)
+		this.versusImageL.setTexture(drawingL.portrait)
+		this.versusTextR.setText(drawingR.nick)
+		this.versusTextL.setText(drawingL.nick)
+
+		this.versusImageL.displayHeight = 250
+		this.versusImageR.displayHeight = 250
+		this.versusImageR.scaleX = this.versusImageR.scaleY
+		this.versusImageL.scaleX = this.versusImageR.scaleY
 
 
+		// TOOD: Add text to chat.
+		this.setVersusScreenVisible(true)
 	}
 
 	PrepareSceneForGuess(canGuess){
@@ -163,6 +202,7 @@ class PaintScene extends Phaser.Scene{
 		this.paintWord.setText("")
 		this.guessB.setVisible(canGuess || true)
 		this.chat.setVisible(true)
+		this.setVersusScreenVisible(false)
 		this.clearCanvases()
 
 	}
@@ -179,7 +219,7 @@ class PaintScene extends Phaser.Scene{
 		this.voteL.setVisible(false)
         this.voteR.setVisible(false)
 		this.chat.setVisible(false)
-        
+
         this.clearCanvasTimers()
 		this.clearCanvases()	
 
@@ -219,6 +259,14 @@ class PaintScene extends Phaser.Scene{
         this.paintCanvasDrawable.setTimerText("")
 	}
 
+	setVersusScreenVisible(isVisible){
+		this.versusImageR.visible = isVisible
+		this.versusImageL.visible = isVisible
+		this.versusTxt.visible = isVisible
+		this.versusTextR.visible = isVisible
+		this.versusTextL.visible = isVisible
+	}
+
 	UpdateUserList(){
 		for(var i = 0; i < 12; i++){
 			if(this.users[i] != null){
@@ -245,7 +293,7 @@ class PaintScene extends Phaser.Scene{
         })
 
         io.on("new-host", function(data){
-        	if(data.nick == self.registry.get("nickname")){
+        	if(data.nick == self.registry.get("nick")){
         		self.isHost = true
 
         		if(self.gameState == "LOBBY"){
@@ -258,7 +306,11 @@ class PaintScene extends Phaser.Scene{
         	}
         })
 
-        io.on("new-round", function(data){
+        io.on("starting-soon", function(data){
+        	self.PrepareSceneForVersus(data)
+        })
+
+        io.on("started-round", function(data){
         	self.isDrawing = false
         	self.PrepareSceneForGuess()
         })
@@ -313,9 +365,8 @@ class PaintScene extends Phaser.Scene{
         })
 
         io.on("chat-text", function(data){
-        	// TODO: Don't send data from server in the first place.
-        	if(!self.isDrawing)
-        		self.chat.addText(data)
+        	// TODO: Don't send data from server in the first place. Or maybe let it send.
+        	self.chat.addText(data)
         })
 	}
 }

@@ -48,6 +48,7 @@ class Chat{
 			message.setOrigin(0, 0.5)
 
 			message.setMask(this.mask)
+			message.visible = this.chat.visible
 			this.chatHistory.push({message: message})
 		}
 		else{
@@ -58,6 +59,9 @@ class Chat{
 
 			sender.setMask(this.mask)
 			message.setMask(this.mask)
+			sender.visible = this.chat.visible
+			message.visible = this.chat.visible
+
 			this.chatHistory.push({sender: sender, message: message})
 		}
 

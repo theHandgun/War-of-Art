@@ -28,12 +28,12 @@ class MainScene extends Phaser.Scene{
 
         this.registry.set("socket-ip", "localhost")
         this.registry.set("socket-port", "3000")
-        this.registry.set("nickname", nick)
+        this.registry.set("nick", nick)
 
         this.io = io("ws://localhost:3000", {transports : ["websocket"]});
 
         this.io.on("connect", function(socket){
-        	this.emit("attemptJoin", {nick: self.registry.get("nickname"), portrait: self.portrait.getPortrait()})
+        	this.emit("attemptJoin", {nick: self.registry.get("nick"), portrait: self.portrait.getPortrait()})
         })
 
         this.io.on("accepted", function(data){

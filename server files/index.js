@@ -147,30 +147,38 @@ function StartRound(){
 
 	gameState = "ROUND"
 
-	io.emit("new-round", {drawerL: drawingPersonL.nick, drawerR: drawingPersonR.nick})
+	io.emit("starting-soon", {drawerL: drawingPersonL.nick, drawerR: drawingPersonR.nick})
 
-	io.to(drawingPersonR.id).emit("selected-painter", curGuessWord)
-	io.to(drawingPersonL.id).emit("selected-painter", curGuessWord)
+	var versusTimer = setInterval(function(){
+		io.emit("started-round", {drawerL: drawingPersonL.nick, drawerR: drawingPersonR.nick})
 
-	roundTimeRemaining = 30
+		io.to(drawingPersonR.id).emit("selected-painter", curGuessWord)
+		io.to(drawingPersonL.id).emit("selected-painter", curGuessWord)
 
-	roundTimer = setInterval(
-		function(){
-		  	if(roundTimeRemaining <= 0){
-		    	
-		    	EndOfPainting()
-		    	clearInterval(roundTimer);
-		    	return
-		  	}
+		roundTimeRemaining = 30
 
-		  	if(gameState != "ROUND"){
-		  		clearInterval(roundTimer)
-		  		return
-		  	}
+		roundTimer = setInterval(
+			function(){
+			  	if(roundTimeRemaining <= 0){
+			    	
+			    	EndOfPainting()
+			    	clearInterval(roundTimer);
+			    	return
+			  	}
 
-		  	roundTimeRemaining -= 1
-		  	io.emit("new-time", roundTimeRemaining)
-		}, 1000);
+			  	if(gameState != "ROUND"){
+			  		clearInterval(roundTimer)
+			  		return
+			  	}
+
+			  	roundTimeRemaining -= 1
+			  	io.emit("new-time", roundTimeRemaining)
+			}, 1000);
+
+		clearInterval(versusTimer)
+
+	}, 6000)
+	
 
 }
 
