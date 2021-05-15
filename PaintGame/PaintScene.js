@@ -178,8 +178,8 @@ class PaintScene extends Phaser.Scene{
 		this.paintHeaderTxt.setText("")
 
 		var drawingR = this.users.filter(usr => usr.nick == data.drawerR)[0]
-		var drawingL = this.users.filter(usr => usr.nick == data.drawerR)[0]
-		console.log(drawingR.nick)
+		var drawingL = this.users.filter(usr => usr.nick == data.drawerL)[0]
+		
 		this.versusImageR.setTexture(drawingR.portrait)
 		this.versusImageL.setTexture(drawingL.portrait)
 		this.versusTextR.setText(drawingR.nick)
@@ -190,7 +190,10 @@ class PaintScene extends Phaser.Scene{
 		this.versusImageR.scaleX = this.versusImageR.scaleY
 		this.versusImageL.scaleX = this.versusImageR.scaleY
 
-
+		this.chat.addText({
+			type: "SYSTEM",
+			message: drawingL.nick + " ve " + drawingR.nick + " çiziyor."
+		})
 		// TOOD: Add text to chat.
 		this.setVersusScreenVisible(true)
 	}
