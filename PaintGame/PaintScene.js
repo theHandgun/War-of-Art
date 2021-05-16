@@ -40,8 +40,6 @@ class PaintScene extends Phaser.Scene{
 
 		this.IDText = this.add.text(10,20, "ID: " + this.id);
 
-
-
 		this.playerBox = this.add.sprite(110, 355,"playersContainer")
 		this.playerBox.setScale(0.35)
 
@@ -116,15 +114,15 @@ class PaintScene extends Phaser.Scene{
 		this.versusImageR.visible = false
 
 		this.versusTextL = this.add.text(450, 350, "asds", {fontFamily: "Arial", fontSize: 30})
-		this.versusTextL.visible = true
+		this.versusTextL.visible = false
 		this.versusTextL.setOrigin(0.5,0.5)
 
 		this.versusTextR = this.add.text(830, 350, "adsds", {fontFamily: "Arial", fontSize: 30})
-		this.versusTextR.visible = true
+		this.versusTextR.visible = false
 		this.versusTextR.setOrigin(0.5,0.5)
 
 		this.versusTxt = this.add.text(600, 150, "VS", {fontFamily: "Arial", fontSize: 36, fontStyle:"bold"})
-		this.versusTxt.visible = true
+		this.versusTxt.visible = false
 
 		this.UpdateUserList()
 	}
@@ -163,7 +161,6 @@ class PaintScene extends Phaser.Scene{
 		this.guessB.setVisible(false)
 		this.chat.setVisible(true)
 
-		this.chat.clearChat()
 		if(!this.isDrawing){
 			this.voteL.setVisible(true)
 	        this.voteR.setVisible(true)
@@ -176,7 +173,7 @@ class PaintScene extends Phaser.Scene{
 		this.paintCanvasR.setVisible(false)
 		this.chat.setVisible(true)
 		this.paintHeaderTxt.setText("")
-
+		this.hostB.visible = false
 		var drawingR = this.users.filter(usr => usr.nick == data.drawerR)[0]
 		var drawingL = this.users.filter(usr => usr.nick == data.drawerL)[0]
 		
@@ -189,6 +186,8 @@ class PaintScene extends Phaser.Scene{
 		this.versusImageR.displayHeight = 250
 		this.versusImageR.scaleX = this.versusImageR.scaleY
 		this.versusImageL.scaleX = this.versusImageR.scaleY
+		this.versusImageL.displayWidth = 250
+		this.versusImageR.displayWidth = 250
 
 		this.chat.addText({
 			type: "SYSTEM",
@@ -363,7 +362,7 @@ class PaintScene extends Phaser.Scene{
         	self.PrepareSceneForLobby()
         })
 
-        io.on("vote-results", function(data){
+        io.on("vote-results", function(){
         	self.PrepreSceneForVoteResults()
         })
 

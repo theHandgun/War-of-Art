@@ -189,20 +189,32 @@ function EndOfPainting(){
 	var voteTimer = setInterval(
 		function() 
 		{
-
-			var RVoters = connectedUsers.filter(usr => usr.lastVote == "R")
-			var LVoters = connectedUsers.filter(usr => usr.lastVote == "L")
-
-			drawingPersonR.points += RVoters.length*10
-			drawingPersonL.points += LVoters.length*10
+			
 
 			io.emit("refresh-users", getUserList())
-			io.emit("vote-results", {R: RVoters, L:LVoters})
+			io.emit("vote-results")
+
+			for (var i = 0; i < connectedUsers.length; i++) {
+				if(connectedUsers[i] == drawingPersonR || connectedUsers[i] == drawingPersonL)
+					continue
+
+				if(connectedUsers[i].lastVote == "R"){
+					drawingPersonR.points += 10
+					emitText(connectedUsers[i].nick + " " + drawingPersonR.nick + "'a oy verdi!")
+				}
+				else if(connectedUsers[i].lastVote == "L"]){
+					drawingPersonL.points += 10
+					emitText(connectedUsers[i].nick + " " + drawingPersonL.nick + "'a oy verdi!")
+				}
+				else{
+					emitText(connectedUsers[i].nick + " çekimser oy kullandı!")
+				}
+			}
 
 			var lobbyTimer = setInterval(function() {ToLobby(); clearInterval(lobbyTimer);}, 5000)
 		
 		   	clearInterval(voteTimer)
-		}, 5000)
+		}, 7000)
 }
 
 function TryAcceptUser(sessionID, nickname, portraitIndex){
