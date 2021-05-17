@@ -95,22 +95,30 @@ io.on("connection", function(socket){
 		if(gameState != "ROUND")
 			return
 
-		var paintSide;
+		var paintSide = getSenderSide(data, socket)
+		if(paintSide){
+			io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: paintSide, color: data.color, isErase: data.isErase})	
+		}
 
-		if(socket.id == drawingPersonR.id)
-		{
-			paintSide = "R"
-		}
-		else if(socket.id == drawingPersonL.id){
-			paintSide = "L"
-		}
-		else{
-			return;
-		}
-		io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: paintSide, color: data.color})
 	})
 
+
 });
+
+function getSenderSide(data, socket){
+
+	var paintSide;
+
+	if(socket.id == drawingPersonR.id)
+	{
+		paintSide = "R"
+	}
+	else if(socket.id == drawingPersonL.id){
+		paintSide = "L"
+	}
+
+	return paintSide
+}
 
 function ToLobby(){
 	gameState = "LOBBY"
@@ -202,7 +210,7 @@ function EndOfPainting(){
 					drawingPersonR.points += 10
 					emitText(connectedUsers[i].nick + " " + drawingPersonR.nick + "'a oy verdi!")
 				}
-				else if(connectedUsers[i].lastVote == "L"]){
+				else if(connectedUsers[i].lastVote == "L"){
 					drawingPersonL.points += 10
 					emitText(connectedUsers[i].nick + " " + drawingPersonL.nick + "'a oy verdi!")
 				}

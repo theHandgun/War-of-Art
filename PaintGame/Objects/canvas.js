@@ -16,6 +16,8 @@ class Canvas {
 	    this.canPaint = false
 	    this.color = 0x000000
 
+	    this.game = game
+
 	    this.create(game)
 
 	}
@@ -37,14 +39,21 @@ class Canvas {
 
 		this.limits ={
 			x1: (self.xPos + self.drawMargin),
-			x2: (self.xPos + self.canvas.displayWidth - self.drawMargin),
-			y1: (self.yPos + self.drawMargin - 3),
-			y2: (self.yPos + self.canvas.displayHeight - self.drawMargin - 2)
+			x2: (self.canvas.displayWidth - self.drawMargin * 2),
+			y1: (self.yPos + self.drawMargin - 4),
+			y2: (self.canvas.displayHeight - (self.drawMargin * 2) + 1)
 		}
 
-		this.graphics = game.add.graphics();
-		this.graphics.lineStyle(this.graphicsScale, 0xFF3300, 1);
-		
+		this.graphics = game.add.graphics()
+		this.graphics.fillStyle(0xFFFFFF, 1);
+
+		this.graphicsZone = game.make.graphics()
+		this.graphicsZone.fillRoundedRect(self.limits.x1, self.limits.y1, self.limits.x2, self.limits.y2, 10)
+
+		this.graphicsMask = new Phaser.Display.Masks.GeometryMask(game, this.graphicsZone);
+
+		this.graphics.setMask(this.graphicsMask)
+
 		this.canvas.timer = game.add.text(this.xPos + this.canvas.displayWidth/2, this.yPos + this.canvas.displayHeight/2, "", {fontFamily: "Arial", fontSize: 82, color: "#000000"})
 		this.canvas.timer.setOrigin(0.5, 0.5)
 		this.canvas.timer.alpha = 0.4
@@ -75,9 +84,9 @@ class Canvas {
 		var deltaY = pointerY - this.OldMouseY;
 
 
-		if(pointer.leftButtonDown() && this.canvas.mouseOverCanvas){
+		if(this.canvas.mouseOverCanvas){
 
-			if(this.OldMouseX > this.limits.x2){ this.OldMouseX = this.limits.x2 - 1}
+			/*if(this.OldMouseX > this.limits.x2){ this.OldMouseX = this.limits.x2 - 1}
 			if(this.OldMouseX < this.limits.x1){ this.OldMouseX = this.limits.x1 + 1}
 			if(this.OldMouseY > this.limits.y2){ this.OldMouseY = this.limits.y2 - 1}
 			if(this.OldMouseY < this.limits.y1){ this.OldMouseY = this.limits.y1 + 1}
@@ -85,24 +94,35 @@ class Canvas {
 			if(pointerX > this.limits.x2){ pointerX = this.limits.x2 - 1}
 			if(pointerX < this.limits.x1){ pointerX = this.limits.x1 + 1}
 			if(pointerY > this.limits.y2){ pointerY = this.limits.y2 - 1}
-			if(pointerY < this.limits.y1){ pointerY = this.limits.y1 + 1}
+			if(pointerY < this.limits.y1){ pointerY = this.limits.y1 + 1}*/
 
-			this.sendPaintMsg(this.OldMouseX, this.OldMouseY, pointerX, pointerY, this.toolboxObj.color)
-			this.paint({
-				xPos: this.OldMouseX, 
-				yPos: this.OldMouseY, 
-				endX: pointerX, 
-				endY: pointerY,
-				color: this.toolboxObj.color
-			})
+			var data = {
+					xPos: this.OldMouseX, 
+					yPos: this.OldMouseY, 
+					endX: pointerX, 
+					endY: pointerY,
+					color: this.toolboxObj.color
+				}
+			if(pointer.leftButtonDown()){
+				this.sendPaintMsg(this.OldMouseX, this.OldMouseY, pointerX, pointerY, this.toolboxObj.color)
+				this.paint(data)
+			}
+			else if(pointer.rightButtonDown()){
+				this.sendEraseMsg(pointerX, pointerY)
+				this.erase(data)
+			}
 		}
 
 			this.OldMouseX = pointerX;
 			this.OldMouseY = pointerY;
 	}
 
-	sendPaintMsg(_xPos, _yPos, _endX, _endY, color){
-		this.io.emit("paint", {xPos:_xPos, yPos:_yPos, endX: _endX, endY: _endY, color: color })
+	sendPaintMsg(xPos, yPos, endX, endY, color, isErase){
+		this.io.emit("paint", {xPos:xPos, yPos:yPos, endX: endX, endY: endY, color: color, isErase: isErase})
+	}
+
+	sendEraseMsg(xPos, yPos){
+		this.io.emit("paint", {xPos: xPos, yPos: yPos, isErase: true})
 	}
 
 	setVisible(isVisible){
@@ -127,7 +147,7 @@ class Canvas {
 		this.canvas.timer.setText(time)
 	}
 
-	paintScaled(data, canvasObj){
+	paintScaled(data, canvasObj, isErase){
 
 		var scaleAmount = canvasObj.spriteScale / this.spriteScale
 
@@ -143,8 +163,12 @@ class Canvas {
 			endY: this.canvas.y + y2,
 			color: data.color
 		}
-
-		this.paint(paintData)
+		if(!data.isErase){
+			this.paint(paintData)
+		}
+		else{
+			this.erase(paintData, scaleAmount)
+		}
 		
 	}
 
@@ -161,6 +185,19 @@ class Canvas {
 		this.graphics.lineTo(data.endX, data.endY)
 		this.graphics.closePath()
 		this.graphics.strokePath()
+		
+	}
+
+	erase(data, scaleAmount){
+		var scaleAmount = scaleAmount || 1
+		this.graphics.fillRect(data.xPos - (10/scaleAmount), data.yPos - (10/scaleAmount), 20/scaleAmount, 20/scaleAmount);
+	}
+
+	getDistance(data){
+		var dx = data.xPos - data.endX;
+    	var dy = data.yPos - data.endY;
+    	return Math.sqrt(dx * dx + dy * dy);
+
 	}
 
 

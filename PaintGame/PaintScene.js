@@ -49,7 +49,7 @@ class PaintScene extends Phaser.Scene{
 		this.paintCanvasL.setVisible(false)
 		this.paintCanvasR.setVisible(false)
 
-		this.paintCanvasDrawable = new Canvas(350, 100, 18, 0.42, 2, this.io, this, "M")
+		this.paintCanvasDrawable = new Canvas(350, 100, 18, 0.42, 3, this.io, this, "M")
 		this.paintCanvasDrawable.canPaint = true
 		this.paintCanvasDrawable.setToolbox(new Toolbox(920, 350, this))
 
@@ -121,7 +121,7 @@ class PaintScene extends Phaser.Scene{
 		this.versusTextR.visible = false
 		this.versusTextR.setOrigin(0.5,0.5)
 
-		this.versusTxt = this.add.text(600, 150, "VS", {fontFamily: "Arial", fontSize: 36, fontStyle:"bold"})
+		this.versusTxt = this.add.text(630, 180, "VS", {fontFamily: "Arial", fontSize: 36, fontStyle:"bold"})
 		this.versusTxt.visible = false
 
 		this.UpdateUserList()
@@ -173,7 +173,7 @@ class PaintScene extends Phaser.Scene{
 		this.paintCanvasR.setVisible(false)
 		this.chat.setVisible(true)
 		this.paintHeaderTxt.setText("")
-		this.hostB.visible = false
+		this.hostB.setVisible(false)
 		var drawingR = this.users.filter(usr => usr.nick == data.drawerR)[0]
 		var drawingL = this.users.filter(usr => usr.nick == data.drawerL)[0]
 		
@@ -206,7 +206,6 @@ class PaintScene extends Phaser.Scene{
 		this.chat.setVisible(true)
 		this.setVersusScreenVisible(false)
 		this.clearCanvases()
-
 	}
 
 	PrepareSceneForLobby(){
@@ -328,7 +327,6 @@ class PaintScene extends Phaser.Scene{
 
         	if(data.canvas == "L"){ canvasToPaint = self.paintCanvasL }
         	else { canvasToPaint = self.paintCanvasR }
-
         	canvasToPaint.paintScaled(data, self.paintCanvasDrawable)
 
         })
