@@ -35,7 +35,9 @@ Choosen players see a huge canvas with tools to illustrate the given word but sp
 had to scale two points sent from drawers to spectators' canvases. I thought it would be a complicated process, I've spent fair bit of time going through documentation of
 Phaser 3 graphics library but wasn't able to find out what I wanted. So I had to create my own scaling algorithm, I thought I would days to solve this problem but I just came
 up with a simple solution after doing some tests.
+
 ![canvas_scaling](https://user-images.githubusercontent.com/22753759/118721056-0912c500-b833-11eb-8a1d-a49f2a6aea55.png)
+
 As you can see on the image, I just realized that only thing I had to do was find the x and y distance of points to the edges of the canvas, then multiply that distance with
 ratio of two canvases and then change stroke size as well to make it look exactly the same. I never expected it to be that simple but I was able to find the solution and implement it in a few hours.
 
