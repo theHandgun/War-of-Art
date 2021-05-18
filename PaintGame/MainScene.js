@@ -4,9 +4,7 @@ class MainScene extends Phaser.Scene{
 
 	}
 	init(){
-		var self = this
-		this.joinB = new Button("longButton", 500,400, "Giriş Yap" , self, function() {self.onJoin()} )
-		this.portrait = new PortraitManager(500, 200, this)
+		
 	}
 
 	preload(){
@@ -16,8 +14,9 @@ class MainScene extends Phaser.Scene{
 
 
 	create(){
-		this.portrait.create()
-       	this.joinB.create()
+        var self = this
+        this.joinB = new Button("longButton", 500,400, "Giriş Yap", this, function() {self.onJoin()} )
+        this.portrait = new PortraitManager(500, 200, this)
     }
 
     onJoin(){

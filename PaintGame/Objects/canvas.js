@@ -58,6 +58,10 @@ class Canvas {
 		this.canvas.timer.setOrigin(0.5, 0.5)
 		this.canvas.timer.alpha = 0.4
 
+		this.eraserMarker = game.add.rectangle(0, 0, 8/this.spriteScale, 8/this.spriteScale, 0xC0C0C0)
+		this.eraserMarker.visible = false
+		this.eraserMarker.setMask(this.graphicsMask)
+
 		this.setVisible(true)
 	}
 
@@ -85,17 +89,6 @@ class Canvas {
 
 
 		if(this.canvas.mouseOverCanvas){
-
-			/*if(this.OldMouseX > this.limits.x2){ this.OldMouseX = this.limits.x2 - 1}
-			if(this.OldMouseX < this.limits.x1){ this.OldMouseX = this.limits.x1 + 1}
-			if(this.OldMouseY > this.limits.y2){ this.OldMouseY = this.limits.y2 - 1}
-			if(this.OldMouseY < this.limits.y1){ this.OldMouseY = this.limits.y1 + 1}
-
-			if(pointerX > this.limits.x2){ pointerX = this.limits.x2 - 1}
-			if(pointerX < this.limits.x1){ pointerX = this.limits.x1 + 1}
-			if(pointerY > this.limits.y2){ pointerY = this.limits.y2 - 1}
-			if(pointerY < this.limits.y1){ pointerY = this.limits.y1 + 1}*/
-
 			var data = {
 					xPos: this.OldMouseX, 
 					yPos: this.OldMouseY, 
@@ -108,13 +101,22 @@ class Canvas {
 				this.paint(data)
 			}
 			else if(pointer.rightButtonDown()){
+				this.eraserMarker.x = pointerX
+				this.eraserMarker.y = pointerY
+				this.eraserMarker.visible = true
+
 				this.sendEraseMsg(pointerX, pointerY)
 				this.erase(data)
 			}
+			else{
+				this.eraserMarker.visible = false
+			}
 		}
 
-			this.OldMouseX = pointerX;
-			this.OldMouseY = pointerY;
+		
+
+		this.OldMouseX = pointerX;
+		this.OldMouseY = pointerY;
 	}
 
 	sendPaintMsg(xPos, yPos, endX, endY, color, isErase){
@@ -123,6 +125,12 @@ class Canvas {
 
 	sendEraseMsg(xPos, yPos){
 		this.io.emit("paint", {xPos: xPos, yPos: yPos, isErase: true})
+	}
+
+	// Reached from outside by toolbox.js
+	sendClearMsg(){
+		this.io.emit("clear-canvas")
+		this.clear()
 	}
 
 	setVisible(isVisible){
@@ -163,6 +171,7 @@ class Canvas {
 			endY: this.canvas.y + y2,
 			color: data.color
 		}
+
 		if(!data.isErase){
 			this.paint(paintData)
 		}
@@ -176,6 +185,7 @@ class Canvas {
 		this.graphics.clear()
 		var color = (this.toolboxObj) ? this.toolboxObj.color:0x000000
 		this.graphics.lineStyle(this.graphicsScale, color, 1);
+		this.graphics.fillStyle(0xFFFFFF, 1);
 	}
 
 	paint(data){
@@ -197,9 +207,7 @@ class Canvas {
 		var dx = data.xPos - data.endX;
     	var dy = data.yPos - data.endY;
     	return Math.sqrt(dx * dx + dy * dy);
-
 	}
-
 
 	static preload(game){
   		game.load.image("canvas", "PaintGame/Assets/Components/canvas.png")

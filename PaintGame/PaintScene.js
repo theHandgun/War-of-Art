@@ -51,7 +51,10 @@ class PaintScene extends Phaser.Scene{
 
 		this.paintCanvasDrawable = new Canvas(350, 100, 18, 0.42, 3, this.io, this, "M")
 		this.paintCanvasDrawable.canPaint = true
-		this.paintCanvasDrawable.setToolbox(new Toolbox(920, 350, this))
+
+		var toolbox = new Toolbox(920, 350, this)
+		this.paintCanvasDrawable.setToolbox(toolbox)
+		toolbox.setCanvas(this.paintCanvasDrawable)
 
 
 		this.chat = new Chat(400, 420, this)
@@ -86,11 +89,6 @@ class PaintScene extends Phaser.Scene{
 			self.voteR.setInteractable(false)
 			self.voteL.setInteractable(true)
         })
-
-        this.voteL.create()
-        this.voteR.create()
-		this.hostB.create()
-		this.guessB.create()
 
 		this.guessB.setVisible(false)
 		this.hostB.setVisible(this.isHost || false)
@@ -270,7 +268,7 @@ class PaintScene extends Phaser.Scene{
 
 	UpdateUserList(){
 		for(var i = 0; i < 12; i++){
-			if(this.users[i] != null){
+			if(this.users[i] != null && this.UserTextArr[i] != null){
 				this.UserTextArr[i].setText(this.users[i].nick + ": " + this.users[i].points)
 				this.PortraitArr[i].setTexture(this.users[i].portrait)
 				this.PortraitArr[i].visible = true
@@ -278,7 +276,7 @@ class PaintScene extends Phaser.Scene{
 				this.PortraitArr[i].displayHeight = 36
 				this.PortraitArr[i].displayWidth = 36
 			}
-			else{
+			else if(this.UserTextArr[i] != null){
 				this.UserTextArr[i].setText("")
 				this.PortraitArr[i].visible = false
 			}
@@ -367,6 +365,16 @@ class PaintScene extends Phaser.Scene{
         io.on("chat-text", function(data){
         	// TODO: Don't send data from server in the first place. Or maybe let it send.
         	self.chat.addText(data)
+        })
+
+        io.on("clear-response", function(data){
+
+        	var canvasToClear
+
+        	if(data.canvas == "L"){ canvasToClear = self.paintCanvasL }
+        	else { canvasToClear = self.paintCanvasR }
+        	canvasToClear.clear()
+
         })
 	}
 }

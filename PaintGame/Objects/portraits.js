@@ -26,9 +26,11 @@ class PortraitManager{
 		]
 
 		this.selectedIndex = 0
+
+		this.create(game)
 	}
 
-	create(game){
+	create(){
 
 		var self = this
 
@@ -54,9 +56,6 @@ class PortraitManager{
 				self.selectNewPortrait(self.portArray.length - 1)
 			}
 		})
-
-		this.forward.create(this.game)
-		this.back.create(this.game)  
 	}
 
 	getPortrait(){

@@ -95,17 +95,24 @@ io.on("connection", function(socket){
 		if(gameState != "ROUND")
 			return
 
-		var paintSide = getSenderSide(data, socket)
+		var paintSide = getSenderSide(socket)
 		if(paintSide){
 			io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: paintSide, color: data.color, isErase: data.isErase})	
 		}
 
 	})
 
+	socket.on("clear-canvas", function(){
+		var paintSide = getSenderSide(socket)
+		if(paintSide){
+			io.emit("clear-response", {canvas: paintSide})	
+		}
+	})
+
 
 });
 
-function getSenderSide(data, socket){
+function getSenderSide(socket){
 
 	var paintSide;
 

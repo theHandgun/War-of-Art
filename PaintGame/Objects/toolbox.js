@@ -46,6 +46,18 @@ class Toolbox{
 			}
 		}
 
+		this.eraseButton = new Button("", this.xPos, this.yPos + 190, "", game, function(){
+			self.canvas.sendClearMsg()
+		}, {
+			normal: "eraser",
+			hover: "eraserH",
+			pressed: "eraserP",
+			scale: 0.8,
+			hasText: false,
+		})
+		
+
+
 		this.selectedClrImg = game.add.sprite(this.xPos, this.yPos - 200, "box")
 		this.selectedClrImg.setScale(1.6)
 		this.selectedClrImg.tint = 0x000000
@@ -57,17 +69,25 @@ class Toolbox{
 		this.selectedClrImg.tint = this.colorList[index]
 	}
 
+	setCanvas(canvas){
+		this.canvas = canvas
+	}
+
 	setVisible(isVisible){
 		for (var i = 0; i < this.paintButtons.length; i++) {
 			this.paintButtons[i].visible = isVisible
 		}
-
+		this.eraseButton.setVisible(isVisible)
 		this.selectedClrImg.visible = isVisible
 	}
 
 	static preload(game){
 		game.load.image("toolbox", "PaintGame/Assets/Components/toolbox.png")
 		game.load.image("box", "PaintGame/Assets/box.png")
+
+		game.load.image("eraser","PaintGame/Assets/Buttons/Eraser/button.png")
+		game.load.image("eraserH","PaintGame/Assets/Buttons/Eraser/buttonH.png")
+		game.load.image("eraserP","PaintGame/Assets/Buttons/Eraser/buttonP.png")
 	}
 
 }
