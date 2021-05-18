@@ -40,5 +40,5 @@ Phaser 3 graphics library but wasn't able to find out what I wanted. So I had to
 As you can see on the image, location of two points at the same relative position change dependent on the distance to the edges I realized that only thing I had to do was find the x and y distance of points to the edges of the canvas, then multiply that distance with ratio of two canvases then I would get the same realtive points. Doing that to two points, I get two points to draw a line. I never expected it to be that simple but I was able to find the solution and implement it in a few hours.
 
 ## Game loop continues
-After voting is over, players are sent to the screen where they wait for the host to continue the game again. I have future plans of removing the need for a host to press continue button every round after I am done with doing a few play tests.
+After voting is over, players are sent to the screen where they wait for the host to continue the game again new players can only join the lobby at this time. I have future plans of removing the need for a host to press continue button every round after I am done with doing a few play tests.
 
