@@ -43,6 +43,6 @@ As you can see on the image, location of two points at the same relative positio
 After voting is over, players are sent to the screen where they wait for the host to continue the game again new players can only join the lobby at this time. I have future plans of removing the need for a host to press continue button every round after I am done with doing a few play tests.
 
 
-### Problems to Fix
+## Problems to Fix
 * PaintScene is very crowded, should split it up to a few more files for more organisation.
 * New players can't join until the round is over due to the server not saving map of the canvases.
