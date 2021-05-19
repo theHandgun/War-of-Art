@@ -17,8 +17,6 @@ class PaintScene extends Phaser.Scene{
 
 	init(data)
     {
-    	var self = this
-
     	this.id = data.id
     	this.gameState = data.gameState
     	this.isHost = data.isHost
@@ -34,28 +32,30 @@ class PaintScene extends Phaser.Scene{
     }
 
 	create(){
+		this.CreateGenericObjects()
+		this.CreateButtons()
+		this.CreateCanvases()
+		this.CreateVersusObjects()
 
-		var self = this
+		this.UpdateUserList()
+	}
 
 
+	update(){
+
+		this.IDText.setText("ID: " + this.id)
+
+		this.paintCanvasL.update(this)
+		this.paintCanvasR.update(this)
+		this.paintCanvasDrawable.update(this)
+
+	}
+
+	CreateGenericObjects(){
 		this.IDText = this.add.text(10,20, "ID: " + this.id);
 
 		this.playerBox = this.add.sprite(110, 355,"playersContainer")
 		this.playerBox.setScale(0.35)
-
-		this.paintCanvasR = new Canvas(655, 35, 11.1, 0.26, 1, this.io, this, "R")
-		this.paintCanvasL = new Canvas(315, 35, 11.1, 0.26, 1, this.io, this, "L")
-
-		this.paintCanvasL.setVisible(false)
-		this.paintCanvasR.setVisible(false)
-
-		this.paintCanvasDrawable = new Canvas(350, 100, 18, 0.42, 3, this.io, this, "M")
-		this.paintCanvasDrawable.canPaint = true
-
-		var toolbox = new Toolbox(920, 350, this)
-		this.paintCanvasDrawable.setToolbox(toolbox)
-		toolbox.setCanvas(this.paintCanvasDrawable)
-
 
 		this.chat = new Chat(400, 420, this)
 		this.chat.setVisible(false)
@@ -68,6 +68,20 @@ class PaintScene extends Phaser.Scene{
 
 		this.paintWord.setOrigin(0.5,0.5)
 		this.paintWord.setText("")
+
+
+		for(var i = 0; i < 12; i++){
+			this.UserTextArr[i] = this.add.text(80, 50 + (i+1)*45.2, "", { fontFamily: 'Arial', fontSize: 20, color: '#00000'})
+			this.UserTextArr[i].setOrigin(0)
+
+			this.PortraitArr[i] = this.add.sprite(40, 88 + (i+i)*22.6, "")
+			this.PortraitArr[i].visible = false
+			this.PortraitArr[i].setOrigin(0, 0)
+		}
+	}
+
+	CreateButtons(){
+		var self = this
 
 		this.hostB = new Button("longButton", 610, 660, "Oyunu Başlat", this, function(){
 			self.io.emit("start-game-request")
@@ -94,17 +108,25 @@ class PaintScene extends Phaser.Scene{
 		this.hostB.setVisible(this.isHost || false)
         this.voteL.setVisible(false)
         this.voteR.setVisible(false)
+	}
 
+	CreateCanvases(){
+		this.paintCanvasR = new Canvas(655, 35, 11.1, 0.26, 1, this.io, this, "R")
+		this.paintCanvasL = new Canvas(315, 35, 11.1, 0.26, 1, this.io, this, "L")
 
-		for(var i = 0; i < 12; i++){
-			this.UserTextArr[i] = this.add.text(80, 50 + (i+1)*45.2, "", { fontFamily: 'Arial', fontSize: 20, color: '#00000'})
-			this.UserTextArr[i].setOrigin(0)
+		this.paintCanvasL.setVisible(false)
+		this.paintCanvasR.setVisible(false)
 
-			this.PortraitArr[i] = this.add.sprite(40, 88 + (i+i)*22.6, "")
-			this.PortraitArr[i].visible = false
-			this.PortraitArr[i].setOrigin(0, 0)
-		}
+		this.paintCanvasDrawable = new Canvas(350, 100, 18, 0.42, 3, this.io, this, "M")
+		this.paintCanvasDrawable.canPaint = true
 
+		var toolbox = new Toolbox(920, 350, this)
+		this.paintCanvasDrawable.setToolbox(toolbox)
+		toolbox.setCanvas(this.paintCanvasDrawable)
+
+	}
+
+	CreateVersusObjects(){
 		this.versusImageL = this.add.sprite(450, 200, "")
 		this.versusImageL.visible = false
 
@@ -121,19 +143,6 @@ class PaintScene extends Phaser.Scene{
 
 		this.versusTxt = this.add.text(630, 180, "VS", {fontFamily: "Arial", fontSize: 36, fontStyle:"bold"})
 		this.versusTxt.visible = false
-
-		this.UpdateUserList()
-	}
-
-
-	update(){
-
-		this.IDText.setText("ID: " + this.id)
-
-		this.paintCanvasL.update(this)
-		this.paintCanvasR.update(this)
-		this.paintCanvasDrawable.update(this)
-
 	}
 
 	PrepareSceneForDraw(word){

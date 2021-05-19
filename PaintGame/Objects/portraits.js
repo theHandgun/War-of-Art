@@ -19,7 +19,7 @@ class PortraitManager{
 		var self = this
 
 		this.portrait = this.game.add.sprite(this.xPos, this.yPos, this.portArray[0].img)
-		this.header = this.game.add.text(this.xPos, this.yPos + 90, this.portArray[1].name, {fontSize: 24})
+		this.header = this.game.add.text(this.xPos, this.yPos + 90, this.portArray[0].name, {fontSize: 24})
 		this.header.setOrigin(0.5,0.5)
 
 		this.portrait.displayWidth = 128

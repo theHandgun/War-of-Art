@@ -116,6 +116,9 @@ function getSenderSide(socket){
 
 	var paintSide;
 
+	if(drawingPersonL == null || drawingPersonR == null)
+		return
+
 	if(socket.id == drawingPersonR.id)
 	{
 		paintSide = "R"
@@ -204,8 +207,6 @@ function EndOfPainting(){
 	var voteTimer = setInterval(
 		function() 
 		{
-			
-
 			io.emit("refresh-users", getUserList())
 			io.emit("vote-results")
 
@@ -227,7 +228,10 @@ function EndOfPainting(){
 			}
 
 			var lobbyTimer = setInterval(function() {ToLobby(); clearInterval(lobbyTimer);}, 5000)
-		
+
+			drawingPersonL = null
+			drawingPersonR = null
+			
 		   	clearInterval(voteTimer)
 		}, 7000)
 }
