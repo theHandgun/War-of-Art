@@ -4,25 +4,9 @@ class PortraitManager{
 		this.yPos =  yPos
 		this.game = game
 		this.portArray = [
-			{img: "boba", name: "Boba Fett"},
-			{img: "barney", name: "Barney Stinson"},
-			{img: "baron", name: "Mehmet Karahanlı"},
-			{img: "bond", name: "James Bond"},
-			{img: "cakir", name: "Süleyman Çakır"},
-			{img: "ethan", name: "Ethan Hunt"},
-			{img: "han", name: "Han Solo"},
-			{img: "harvey", name: "Harvey Specter"},
-			{img: "house", name: "Dr. Gregory House"},
-			{img: "indiana", name: "Indiana Jones"},
-			{img: "irfan", name: "İrfan Hoca"},
-			{img: "luke", name: "Luke Skywalker"},
-			{img: "maul", name: "Darth Maul"},
-			{img: "pala", name: "Pala"},
-			{img: "polat", name: "Polat Alemdar"},
-			{img: "necmi", name: "Testere Necmi"},
-			{img: "50 kuruş", name: "450 Kuruş"},
-			{img: "ercik", name: "President Ercik"},
-			{img: "terminator", name: "Terminator"}
+			{img: "red", name: "Red Avatar"},
+			{img: "white", name: "White Avatar"},
+			{img: "blue", name: "Blue Avatar"}
 		]
 
 		this.selectedIndex = 0
@@ -34,8 +18,8 @@ class PortraitManager{
 
 		var self = this
 
-		this.portrait = this.game.add.sprite(this.xPos, this.yPos, "boba")
-		this.header = this.game.add.text(this.xPos, this.yPos + 90, "Boba Fett", {fontSize: 24})
+		this.portrait = this.game.add.sprite(this.xPos, this.yPos, this.portArray[0].img)
+		this.header = this.game.add.text(this.xPos, this.yPos + 90, this.portArray[1].name, {fontSize: 24})
 		this.header.setOrigin(0.5,0.5)
 
 		this.portrait.displayWidth = 128
@@ -73,24 +57,9 @@ class PortraitManager{
 
 
 	static preloadAll(game){
-		game.load.image("boba", "PaintGame/Assets/Portraits/boba.jpg")
-		game.load.image("barney", "PaintGame/Assets/Portraits/barney.jpg")
-		game.load.image("baron", "PaintGame/Assets/Portraits/baron.jpg")
-		game.load.image("bond", "PaintGame/Assets/Portraits/bond.jpg")
-		game.load.image("cakir", "PaintGame/Assets/Portraits/cakir.jpg")
-		game.load.image("ethan", "PaintGame/Assets/Portraits/ethan.jpg")
-		game.load.image("han", "PaintGame/Assets/Portraits/han.jpg")
-		game.load.image("harvey", "PaintGame/Assets/Portraits/harvey.jpg")
-		game.load.image("house", "PaintGame/Assets/Portraits/house.png")
-		game.load.image("indiana", "PaintGame/Assets/Portraits/indiana.jpg")
-		game.load.image("irfan", "PaintGame/Assets/Portraits/irfan.jpg")
-		game.load.image("luke", "PaintGame/Assets/Portraits/luke.jpg")
-		game.load.image("maul", "PaintGame/Assets/Portraits/maul.jpg")
-		game.load.image("pala", "PaintGame/Assets/Portraits/pala.jpg")
-		game.load.image("polat", "PaintGame/Assets/Portraits/polat.jpg")
-		game.load.image("necmi", "PaintGame/Assets/Portraits/necmi.jpg")
-		game.load.image("50 kuruş", "PaintGame/Assets/Portraits/50 kuruş.png")
-		game.load.image("ercik", "PaintGame/Assets/Portraits/ercik.png")
-		game.load.image("terminator", "PaintGame/Assets/Portraits/terminator.jpg")
+		game.load.image("red", "PaintGame/Assets/Portraits/red.png")
+		game.load.image("white", "PaintGame/Assets/Portraits/white.png")
+		game.load.image("blue", "PaintGame/Assets/Portraits/blue.png")
+
 	}
 }
