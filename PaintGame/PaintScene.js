@@ -44,10 +44,7 @@ class PaintScene extends Phaser.Scene{
 	update(){
 
 		this.IDText.setText("ID: " + this.id)
-
-		this.paintCanvasL.update(this)
-		this.paintCanvasR.update(this)
-		this.paintCanvasDrawable.update(this)
+		this.toolbox.update()
 
 	}
 
@@ -120,9 +117,9 @@ class PaintScene extends Phaser.Scene{
 		this.paintCanvasDrawable = new Canvas(350, 100, 18, 0.42, 3, this.io, this, "M")
 		this.paintCanvasDrawable.canPaint = true
 
-		var toolbox = new Toolbox(920, 350, this)
-		this.paintCanvasDrawable.setToolbox(toolbox)
-		toolbox.setCanvas(this.paintCanvasDrawable)
+		this.toolbox = new Toolbox(920, 350, this)
+		this.paintCanvasDrawable.setToolbox(this.toolbox)
+		this.toolbox.setCanvas(this.paintCanvasDrawable)
 
 	}
 

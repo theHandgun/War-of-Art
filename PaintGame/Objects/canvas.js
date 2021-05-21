@@ -65,60 +65,6 @@ class Canvas {
 		this.setVisible(true)
 	}
 
-	update(game){
-		var pointer = game.input.activePointer;
-
-
-	  	if(!this.canPaint || !this.canvas.visible)
-	  	{
-	  		this.OldMouseX = null
-	  		this.OldMouseY = null
-	  		return
-	  	}
-
-		var pointerX = game.input.x;
-		var pointerY = game.input.y;
-
-		if(this.OldMouseX == null){
-			this.OldMouseX = pointerX;
-			this.OldMouseY = pointerY;
-		}
-
-		var deltaX = pointerX - this.OldMouseX;
-		var deltaY = pointerY - this.OldMouseY;
-
-
-		if(this.canvas.mouseOverCanvas){
-			var data = {
-					xPos: this.OldMouseX, 
-					yPos: this.OldMouseY, 
-					endX: pointerX, 
-					endY: pointerY,
-					color: this.toolboxObj.color
-				}
-			if(pointer.leftButtonDown()){
-				this.sendPaintMsg(this.OldMouseX, this.OldMouseY, pointerX, pointerY, this.toolboxObj.color)
-				this.paint(data)
-			}
-			else if(pointer.rightButtonDown()){
-				this.eraserMarker.x = pointerX
-				this.eraserMarker.y = pointerY
-				this.eraserMarker.visible = true
-
-				this.sendEraseMsg(pointerX, pointerY)
-				this.erase(data)
-			}
-			else{
-				this.eraserMarker.visible = false
-			}
-		}
-
-		
-
-		this.OldMouseX = pointerX;
-		this.OldMouseY = pointerY;
-	}
-
 	sendPaintMsg(xPos, yPos, endX, endY, color, isErase){
 		this.io.emit("paint", {xPos:xPos, yPos:yPos, endX: endX, endY: endY, color: color, isErase: isErase})
 	}
@@ -207,6 +153,10 @@ class Canvas {
 		var dx = data.xPos - data.endX;
     	var dy = data.yPos - data.endY;
     	return Math.sqrt(dx * dx + dy * dy);
+	}
+
+	isVisible(){
+		return this.canvas.visible
 	}
 
 	static preload(game){

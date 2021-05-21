@@ -21,18 +21,23 @@ class Toolbox{
 			0xFFC90E,
 		]
 		this.color = 0x000000
+		this.selectedTool = "pen"
+
+
+		this.pen = new Pen(game)
+
 		this.create(game)
 	}
 
-	create(game){
+	create(){
 		var self = this
-		this.toolbox = game.add.sprite(this.xPos, this.yPos, "toolbox")
+		this.toolbox = this.game.add.sprite(this.xPos, this.yPos, "toolbox")
 		this.toolbox.setScale(0.42)
 
 		var index = 0
 		for (var x = 0; x < 7; x++) {
 			for (var y = 0; y < 2; y++) {
-				this.paintButtons[index] = game.add.sprite( (this.xPos - 14.5) + y*29, (this.yPos - 125) + x*29, "box").setInteractive()
+				this.paintButtons[index] = this.game.add.sprite( (this.xPos - 14.5) + y*29, (this.yPos - 125) + x*29, "box").setInteractive()
 				this.paintButtons[index].setScale(.84)
 				this.paintButtons[index].tint = this.colorList[index]
 
@@ -46,22 +51,29 @@ class Toolbox{
 			}
 		}
 
-		this.eraseButton = new Button("", this.xPos, this.yPos + 190, "", game, function(){
+		this.eraseButton = new Button("", this.xPos, this.yPos + 190, "", this.game, function(){
 			self.canvas.sendClearMsg()
 		}, {
 			normal: "eraser",
 			hover: "eraserH",
 			pressed: "eraserP",
 			scale: 0.8,
-			hasText: false,
+			hasText: false
 		})
 		
 
 
-		this.selectedClrImg = game.add.sprite(this.xPos, this.yPos - 200, "box")
+		this.selectedClrImg = this.game.add.sprite(this.xPos, this.yPos - 200, "box")
 		this.selectedClrImg.setScale(1.6)
 		this.selectedClrImg.tint = 0x000000
 		
+	}
+
+	update()
+	{
+		if(this.selectedTool == "pen"){
+			this.pen.update(this.canvas, this.color)
+		}
 	}
 
 	selectColor(index){
@@ -71,6 +83,7 @@ class Toolbox{
 
 	setCanvas(canvas){
 		this.canvas = canvas
+		this.pen.create(this.game, this.canvas.spriteScale, this.canvas.graphicsMask)
 	}
 
 	setVisible(isVisible){
