@@ -1,4 +1,4 @@
-class Pen{
+class PenTool{
 	constructor(game){
 		this.game = game
 		this.gamePointer = game.input.activePointer

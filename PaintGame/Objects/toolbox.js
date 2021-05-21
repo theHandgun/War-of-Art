@@ -21,14 +21,15 @@ class Toolbox{
 			0xFFC90E,
 		]
 		this.color = 0x000000
-		this.selectedTool = "pen"
+		this.selectedTool = "filled-rect"
 
 
-		this.pen = new Pen(game)
-
-		this.create(game)
+		this.pen = new PenTool(game)
+		this.filledrect = new FilledRectTool(game)
+		
 	}
 
+	// Called when canvas is set.
 	create(){
 		var self = this
 		this.toolbox = this.game.add.sprite(this.xPos, this.yPos, "toolbox")
@@ -61,7 +62,8 @@ class Toolbox{
 			hasText: false
 		})
 		
-
+		this.pen.create(this.game, this.canvas.spriteScale, this.canvas.graphicsMask)
+		this.filledrect.create(this.canvas.graphicsMask)
 
 		this.selectedClrImg = this.game.add.sprite(this.xPos, this.yPos - 200, "box")
 		this.selectedClrImg.setScale(1.6)
@@ -72,7 +74,11 @@ class Toolbox{
 	update()
 	{
 		if(this.selectedTool == "pen"){
-			this.pen.update(this.canvas, this.color)
+			this.filledrect.update()
+			//this.pen.update(this.canvas, this.color)
+		}
+		else if (this.selectedTool == "filled-rect"){
+			this.filledrect.update()
 		}
 	}
 
@@ -83,7 +89,7 @@ class Toolbox{
 
 	setCanvas(canvas){
 		this.canvas = canvas
-		this.pen.create(this.game, this.canvas.spriteScale, this.canvas.graphicsMask)
+		this.create(game)
 	}
 
 	setVisible(isVisible){
