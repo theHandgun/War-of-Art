@@ -21,7 +21,7 @@ class Toolbox{
 			0xFFC90E,
 		]
 		this.color = 0x000000
-		this.selectedTool = "filled-rect"
+		this.selectedTool = "pen"
 
 
 		this.pen = new PenTool(game)
@@ -62,7 +62,7 @@ class Toolbox{
 			hasText: false
 		})
 		
-		this.pen.create(this.game, this.canvas.spriteScale, this.canvas.graphicsMask)
+		this.pen.create(this.game, this.canvas, this.canvas.graphicsMask)
 		this.filledrect.create(this.canvas.graphicsMask)
 
 		this.selectedClrImg = this.game.add.sprite(this.xPos, this.yPos - 200, "box")
@@ -74,7 +74,7 @@ class Toolbox{
 	update()
 	{
 		if(this.selectedTool == "pen"){
-			this.filledrect.update()
+			this.pen.update()
 			//this.pen.update(this.canvas, this.color)
 		}
 		else if (this.selectedTool == "filled-rect"){

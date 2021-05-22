@@ -27,7 +27,8 @@ class PaintScene extends Phaser.Scene{
     	this.UserTextArr = []
     	this.PortraitArr = []
 
-        this.SocketEvents(this.io, this)
+    	this.paintManager = new PaintManager()
+    	this.networkManager = new NetworkManager(this.io, this, this.paintManager)
         
     }
 
@@ -81,22 +82,22 @@ class PaintScene extends Phaser.Scene{
 		var self = this
 
 		this.hostB = new Button("longButton", 610, 660, "Oyunu Başlat", this, function(){
-			self.io.emit("start-game-request")
+			self.networkManager.emit("start-game-request")
         })
 
         this.guessB = new Button("longButton", 645, 660, "Tahmin Yap", this, function(){
         	var guessWord = prompt()
-			self.io.emit("guess-word", guessWord)
+			self.networkManager.emit("guess-word", guessWord)
         })
 
         this.voteL = new Button("midButton", 475, 385, "Oy Ver", this, function(){
-			self.io.emit("vote", "L")
+			self.networkManager.emit("vote", "L")
 			self.voteR.setInteractable(true)
 			self.voteL.setInteractable(false)
         })
 
         this.voteR = new Button("midButton", 815, 385, "Oy Ver", this, function(){
-			self.io.emit("vote", "R")
+			self.networkManager.emit("vote", "R")
 			self.voteR.setInteractable(false)
 			self.voteL.setInteractable(true)
         })
@@ -116,6 +117,7 @@ class PaintScene extends Phaser.Scene{
 
 		this.paintCanvasDrawable = new Canvas(350, 100, 18, 0.42, 3, this.io, this, "M")
 		this.paintCanvasDrawable.canPaint = true
+		this.paintManager.setMainCanvas(this.paintCanvasDrawable)
 
 		this.toolbox = new Toolbox(920, 350, this)
 		this.paintCanvasDrawable.setToolbox(this.toolbox)
@@ -287,100 +289,5 @@ class PaintScene extends Phaser.Scene{
 				this.PortraitArr[i].visible = false
 			}
 		}
-	}
-
-
-	SocketEvents(io, self){
-
-        io.on("refresh-users", function(data){
-        	self.users = data
-        	self.UpdateUserList()
-        })
-
-        io.on("new-host", function(data){
-        	if(data.nick == self.registry.get("nick")){
-        		self.isHost = true
-
-        		if(self.gameState == "LOBBY"){
-        			self.PrepareSceneForLobby()
-        		}
-        	}
-        	else{
-        		self.isHost = false
-        		self.hostB.setVisible(false)
-        	}
-        })
-
-        io.on("starting-soon", function(data){
-        	self.PrepareSceneForVersus(data)
-        })
-
-        io.on("started-round", function(data){
-        	self.isDrawing = false
-        	self.PrepareSceneForGuess()
-        })
-
-        io.on("selected-painter", function(data){
-        	self.isDrawing = true
-        	self.PrepareSceneForDraw(data)
-        })
-
-        io.on("paint-response", function(data)
-        {
-        	var canvasToPaint
-
-        	if(data.canvas == "L"){ canvasToPaint = self.paintCanvasL }
-        	else { canvasToPaint = self.paintCanvasR }
-        	canvasToPaint.paintScaled(data, self.paintCanvasDrawable)
-
-        })
-
-        io.on("guessed-correct", function(){
-        	self.guessB.setVisible(false)
-        	alert("Doğru bildin, +10 puan")
-        })
-
-        io.on("cancel-round", function(data){
-        	self.PrepareSceneForLobby()
-        	alert(data)
-        })
-
-        io.on("new-time", function(data){
-        	self.paintCanvasDrawable.setTimerText(data)
-        	self.paintCanvasR.setTimerText(data)
-        	self.paintCanvasL.setTimerText(data)
-        })
-
-        io.on("time-up", function(data){
-        	self.gameState = "EPIL-LOBBY"
-        	self.PrepareSceneForVote(false)
-        	self.clearCanvasTimers()
-
-        })
-
-        io.on("to-lobby", function(data){
-        	self.gameState = "LOBBY"
-        	self.clearCanvasTimers()
-        	self.PrepareSceneForLobby()
-        })
-
-        io.on("vote-results", function(){
-        	self.PrepreSceneForVoteResults()
-        })
-
-        io.on("chat-text", function(data){
-        	// TODO: Don't send data from server in the first place. Or maybe let it send.
-        	self.chat.addText(data)
-        })
-
-        io.on("clear-response", function(data){
-
-        	var canvasToClear
-
-        	if(data.canvas == "L"){ canvasToClear = self.paintCanvasL }
-        	else { canvasToClear = self.paintCanvasR }
-        	canvasToClear.clear()
-
-        })
 	}
 }

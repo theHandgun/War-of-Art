@@ -96,8 +96,10 @@ io.on("connection", function(socket){
 			return
 
 		var paintSide = getSenderSide(socket)
+
 		if(paintSide){
-			io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: paintSide, color: data.color, isErase: data.isErase})	
+			// TODO: Don't send message to the sender.
+			io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: paintSide, color: data.color, tool: data.tool})	
 		}
 
 	})

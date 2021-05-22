@@ -58,26 +58,17 @@ class Canvas {
 		this.canvas.timer.setOrigin(0.5, 0.5)
 		this.canvas.timer.alpha = 0.4
 
-		this.eraserMarker = game.add.rectangle(0, 0, 8/this.spriteScale, 8/this.spriteScale, 0xC0C0C0)
-		this.eraserMarker.visible = false
-		this.eraserMarker.setMask(this.graphicsMask)
-
 		this.setVisible(true)
 	}
 
-	sendPaintMsg(xPos, yPos, endX, endY, color, isErase){
-		this.io.emit("paint", {xPos:xPos, yPos:yPos, endX: endX, endY: endY, color: color, isErase: isErase})
-	}
 
-	sendEraseMsg(xPos, yPos){
-		this.io.emit("paint", {xPos: xPos, yPos: yPos, isErase: true})
-	}
-
-	// Reached from outside by toolbox.js
+	// TODO: Move this method to somewhere better.
 	sendClearMsg(){
-		this.io.emit("clear-canvas")
+		self.networkManager.emit("clear-canvas")
 		this.clear()
 	}
+	// ---
+
 
 	setVisible(isVisible){
 		this.canvas.visible = isVisible
@@ -101,7 +92,7 @@ class Canvas {
 		this.canvas.timer.setText(time)
 	}
 
-	paintScaled(data, canvasObj, isErase){
+	getScaledData(data, canvasObj){
 
 		var scaleAmount = canvasObj.spriteScale / this.spriteScale
 
@@ -115,15 +106,12 @@ class Canvas {
 			yPos: this.canvas.y + y,
 			endX: this.canvas.x + x2,
 			endY: this.canvas.y + y2,
-			color: data.color
+			color: data.color,
+			scaleAmount: scaleAmount
+
 		}
 
-		if(!data.isErase){
-			this.paint(paintData)
-		}
-		else{
-			this.erase(paintData, scaleAmount)
-		}
+		return paintData
 		
 	}
 
@@ -134,20 +122,7 @@ class Canvas {
 		this.graphics.fillStyle(0xFFFFFF, 1);
 	}
 
-	paint(data){
-		this.graphics.lineStyle(this.graphicsScale, data.color, 1);
-		this.graphics.beginPath()
-		this.graphics.moveTo(data.xPos, data.yPos)
-		this.graphics.lineTo(data.endX, data.endY)
-		this.graphics.closePath()
-		this.graphics.strokePath()
-		
-	}
 
-	erase(data, scaleAmount){
-		var scaleAmount = scaleAmount || 1
-		this.graphics.fillRect(data.xPos - (10/scaleAmount), data.yPos - (10/scaleAmount), 20/scaleAmount, 20/scaleAmount);
-	}
 
 	getDistance(data){
 		var dx = data.xPos - data.endX;
