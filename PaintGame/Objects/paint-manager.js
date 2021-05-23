@@ -11,15 +11,19 @@ class PaintManager{
 
 		var scaledData = targetCanvas.getScaledData(data, this.mainCanvas)
 
-
-		if(data.tool == "pen"){
-			this.paintPen(scaledData, targetCanvas)
-		}
-		else if(data.tool == "eraser"){
-			this.erase(scaledData, targetCanvas)
-		}
-		else if(data.tool == "filled-rect"){
-			this.paintRect(scaledData, targetCanvas)
+		switch(data.tool){
+			case "pen": 
+				this.paintPen(scaledData, targetCanvas) 
+			break;
+			case "eraser":
+				this.erase(scaledData, targetCanvas) 
+			break;
+			case "filled-rect": 
+				this.paintRect(scaledData, targetCanvas, true) 
+			break;
+			case "filled-ellipse":
+				this.paintCircle(scaledData, targetCanvas, true) 
+			break;
 		}
 	}
 
@@ -34,13 +38,24 @@ class PaintManager{
 		canvas.graphics.strokePath()
 	}
 
-	paintRect(data, canvas){
+	paintRect(data, canvas, isFilled){
 		var width = data.endX - data.xPos;
 		var height = data.endY - data.yPos;
 
 		canvas.graphics.fillStyle(data.color);
 		canvas.graphics.fillRect(data.xPos, data.yPos, width, height);
 	}
+
+	paintCircle(data, canvas, isFilled){
+		var width = data.endX - data.xPos;
+		var height = data.endY - data.yPos;
+
+		canvas.graphics.fillStyle(data.color);
+		canvas.graphics.fillEllipse(data.xPos, data.yPos, width, height, 100);
+	}
+
+
+
 
 	erase(data, canvas){
 		var scaleRatio = data.scaleAmount || 1

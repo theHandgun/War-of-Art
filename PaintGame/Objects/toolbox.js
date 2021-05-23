@@ -21,14 +21,14 @@ class Toolbox{
 			0xFFC90E,
 		]
 		this.color = 0x000000
-		this.selectedTool = "filled-rect"
+		this.selectedTool = "filled-circle"
 
 		// This shouldn't be here, remove it after moving the clear all button.
 		this.networkManager = game.networkManager
 		//----
 
 		this.pen = new PenTool(game)
-		this.filledrect = new FilledRectTool(game)
+		this.shapeTool = new ShapeTool(game)
 		
 	}
 
@@ -66,8 +66,9 @@ class Toolbox{
 		})
 		
 		this.pen.create(this.game, this.canvasObj, this.canvasObj.graphicsMask)
-		this.filledrect.create(this.canvasObj.graphicsMask)
-
+		this.shapeTool.create(this.canvasObj.graphicsMask)
+		this.shapeTool.setShape("filled-ellipse")
+		
 		this.selectedClrImg = this.game.add.sprite(this.xPos, this.yPos - 200, "box")
 		this.selectedClrImg.setScale(1.6)
 		this.selectedClrImg.tint = 0x000000
@@ -76,16 +77,12 @@ class Toolbox{
 
 	update()
 	{
-		/*if(this.canvasObj && !this.canvasObj.canPaint || !canvasObj.isVisible() || !this.canvasObj.canvas.mouseOverCanvas)
-	  	{
-	  		return
-	  	}*/
 
 		if(this.selectedTool == "pen"){
 			this.pen.update(this.canvas, this.color)
 		}
-		else if (this.selectedTool == "filled-rect"){
-			this.filledrect.update(this.canvas, this.color)
+		else{
+			this.shapeTool.update(this.canvas, this.color, this.selectedTool)
 		}
 	}
 
