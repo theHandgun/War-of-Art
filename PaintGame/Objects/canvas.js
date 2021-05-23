@@ -63,8 +63,8 @@ class Canvas {
 
 
 	// TODO: Move this method to somewhere better.
-	sendClearMsg(){
-		self.networkManager.emit("clear-canvas")
+	sendClearMsg(nwManger){
+		nwManger.emit("clear-canvas")
 		this.clear()
 	}
 	// ---

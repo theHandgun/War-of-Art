@@ -21,8 +21,11 @@ class Toolbox{
 			0xFFC90E,
 		]
 		this.color = 0x000000
-		this.selectedTool = "pen"
+		this.selectedTool = "filled-rect"
 
+		// This shouldn't be here, remove it after moving the clear all button.
+		this.networkManager = game.networkManager
+		//----
 
 		this.pen = new PenTool(game)
 		this.filledrect = new FilledRectTool(game)
@@ -53,7 +56,7 @@ class Toolbox{
 		}
 
 		this.eraseButton = new Button("", this.xPos, this.yPos + 190, "", this.game, function(){
-			self.canvas.sendClearMsg()
+			self.canvasObj.sendClearMsg(self.networkManager)
 		}, {
 			normal: "eraser",
 			hover: "eraserH",
@@ -62,8 +65,8 @@ class Toolbox{
 			hasText: false
 		})
 		
-		this.pen.create(this.game, this.canvas, this.canvas.graphicsMask)
-		this.filledrect.create(this.canvas.graphicsMask)
+		this.pen.create(this.game, this.canvasObj, this.canvasObj.graphicsMask)
+		this.filledrect.create(this.canvasObj.graphicsMask)
 
 		this.selectedClrImg = this.game.add.sprite(this.xPos, this.yPos - 200, "box")
 		this.selectedClrImg.setScale(1.6)
@@ -73,12 +76,16 @@ class Toolbox{
 
 	update()
 	{
+		/*if(this.canvasObj && !this.canvasObj.canPaint || !canvasObj.isVisible() || !this.canvasObj.canvas.mouseOverCanvas)
+	  	{
+	  		return
+	  	}*/
+
 		if(this.selectedTool == "pen"){
-			this.pen.update()
-			//this.pen.update(this.canvas, this.color)
+			this.pen.update(this.canvas, this.color)
 		}
 		else if (this.selectedTool == "filled-rect"){
-			this.filledrect.update()
+			this.filledrect.update(this.canvas, this.color)
 		}
 	}
 
@@ -88,7 +95,7 @@ class Toolbox{
 	}
 
 	setCanvas(canvas){
-		this.canvas = canvas
+		this.canvasObj = canvas
 		this.create(game)
 	}
 

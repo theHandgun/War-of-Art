@@ -6,68 +6,56 @@ class PenTool{
 	}
 
 	create(game, canvas, mask){
-		this.connectedCanvas = canvas
 		this.eraserMarker = game.add.rectangle(0, 0, 8/canvas.spriteScale, 8/canvas.spriteScale, 0xC0C0C0)
 		this.eraserMarker.visible = false
 		this.eraserMarker.setMask(mask)
 	}
 
-	update(drawColor){
+	update(canvas, drawColor){
 		
-	  	if(!this.connectedCanvas.canPaint || !this.connectedCanvas.isVisible())
-	  	{
-	  		this.OldMouseX = null
-	  		this.OldMouseY = null
-	  		return
-	  	}
+		var pointerX = this.game.input.x;
+		var pointerY = this.game.input.y;
+
+		if(this.OldMouseX == null){
+			this.OldMouseX = pointerX;
+			this.OldMouseY = pointerY;
+		}
 
 
-		if(this.connectedCanvas.canvas.mouseOverCanvas){
 
-			var pointerX = this.game.input.x;
-			var pointerY = this.game.input.y;
+		if(this.gamePointer.leftButtonDown()){
 
-			if(this.OldMouseX == null){
-				this.OldMouseX = pointerX;
-				this.OldMouseY = pointerY;
+			var paintData = {
+				xPos: this.OldMouseX, 
+				yPos: this.OldMouseY, 
+				endX: pointerX, 
+				endY: pointerY,
+				color: drawColor,
+				tool: "pen"
+			}
+			this.game.networkManager.emit("paint", paintData)
+			this.paintManager.paint(paintData, this.paintManager.mainCanvas)
+		}
+		else if(this.gamePointer.rightButtonDown()){
+			this.eraserMarker.x = pointerX
+			this.eraserMarker.y = pointerY
+			this.eraserMarker.visible = true
+
+			var eraseData = {
+				xPos: this.OldMouseX, 
+				yPos: this.OldMouseY, 
+				tool: "eraser"
 			}
 
-			var data = {
-					xPos: this.OldMouseX, 
-					yPos: this.OldMouseY, 
-					endX: pointerX, 
-					endY: pointerY,
-					color: drawColor,
-					tool: "pen"
-				}
-			if(this.gamePointer.leftButtonDown()){
-				this.sendPaintMsg(this.OldMouseX, this.OldMouseY, pointerX, pointerY, drawColor)
-				this.paintManager.paint(data, this.paintManager.mainCanvas)
-			}
-			else if(this.gamePointer.rightButtonDown()){
-				this.eraserMarker.x = pointerX
-				this.eraserMarker.y = pointerY
-				this.eraserMarker.visible = true
-
-				this.sendEraseMsg(data.endX, data.endY)
-				this.paintManager.erase(data, this.paintManager.mainCanvas)
-			}
-			else{
-				this.eraserMarker.visible = false
-			}
+			this.game.networkManager.emit("paint", eraseData)
+			this.paintManager.erase(eraseData, this.paintManager.mainCanvas)
+		}
+		else{
+			this.eraserMarker.visible = false
 		}
 
 		this.OldMouseX = pointerX;
 		this.OldMouseY = pointerY;
 	}
 
-	// Might merge these two in the future.
-	sendEraseMsg(xPos, yPos){
-		this.game.networkManager.emit("paint", {xPos: xPos, yPos: yPos, tool: "eraser"})
-	}
-
-	sendPaintMsg(xPos, yPos, endX, endY, color, tool){
-		this.game.networkManager.emit("paint", {xPos:xPos, yPos:yPos, endX: endX, endY: endY, color: color, tool: "pen"})
-	}
-	// ----
 }

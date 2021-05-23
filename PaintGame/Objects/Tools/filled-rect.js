@@ -2,6 +2,7 @@ class FilledRectTool{
 	constructor(game){
 		this.game = game
 		this.gamePointer = game.input.activePointer
+		this.paintManager = game.paintManager
 	}
 
 	create(mask){
@@ -9,7 +10,7 @@ class FilledRectTool{
 		this.rectHighlight.setMask(mask)
 	}
 
-	update(){
+	update(canvas, drawColor){
 
 		var pointerX = this.game.input.x;
 		var pointerY = this.game.input.y;
@@ -18,6 +19,7 @@ class FilledRectTool{
 			if(this.initialPos){
 				this.rectHighlight.width = pointerX - this.initialPos.x
 				this.rectHighlight.height = pointerY - this.initialPos.y
+				this.rectHighlight.fillColor = drawColor
 			}
 			else{
 				this.initialPos = {x: pointerX, y: pointerY}
@@ -32,10 +34,21 @@ class FilledRectTool{
 		}
 		else{
 			if(this.initialPos){
-				// Draw rect.
+				var data = {
+					xPos: this.initialPos.x,
+					yPos: this.initialPos.y,
+					endX: pointerX,
+					endY: pointerY,
+					color: drawColor,
+					tool: "filled-rect"
+				}
+
+				this.game.networkManager.emit("paint", data)
+				this.paintManager.paint(data, this.paintManager.mainCanvas)
 				this.rectHighlight.visible = false
 				this.initialPos = null
 			}
 		}
 	}
+
 }
