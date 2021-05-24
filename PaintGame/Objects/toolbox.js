@@ -21,7 +21,7 @@ class Toolbox{
 			0xFFC90E,
 		]
 		this.color = 0x000000
-		this.selectedTool = "filled-circle"
+		this.selectedTool = "rect"
 
 		// This shouldn't be here, remove it after moving the clear all button.
 		this.networkManager = game.networkManager
@@ -67,7 +67,7 @@ class Toolbox{
 		
 		this.pen.create(this.game, this.canvasObj, this.canvasObj.graphicsMask)
 		this.shapeTool.create(this.canvasObj.graphicsMask)
-		this.shapeTool.setShape("filled-ellipse")
+		this.shapeTool.setShape(this.selectedTool, false)
 		
 		this.selectedClrImg = this.game.add.sprite(this.xPos, this.yPos - 200, "box")
 		this.selectedClrImg.setScale(1.6)

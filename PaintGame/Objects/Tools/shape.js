@@ -3,29 +3,36 @@ class ShapeTool{
 		this.game = game
 		this.gamePointer = game.input.activePointer
 		this.paintManager = game.paintManager
+
+		this.isFilled = false
 	}
 
 	create(mask){
 		this.rectHighlight = this.game.add.rectangle(0, 0, 0, 0, 0x000000)
 		this.circleHighlight = this.game.add.ellipse(0.0,0,0, 0x000000)
-		this.circleHighlight.setFillStyle(0xFF000000, 1);
+
 
 		this.circleHighlight.setMask(mask)
 		this.rectHighlight.setMask(mask)
 	}
 
-	setShape(newShape){
-		var self = this
+	setShape(newShape, isFilled){
+		var alpha = isFilled ? 1 : 0
+
 		switch(newShape){
-			case "filled-rect":
-				self.highlightedShape = self.rectHighlight
+			case "rect":
+				this.highlightedShape = this.rectHighlight
 			break;
-			case "filled-ellipse":
-				self.highlightedShape = self.circleHighlight
+			case "ellipse":
+				this.highlightedShape = this.circleHighlight
 			break;
 		}
 
+		this.highlightedShape.setFillStyle(0x000000, alpha)
+		this.highlightedShape.setStrokeStyle(2, 0x000000, 1-alpha);
+		
 		this.currentShape = newShape
+		this.isFilled = isFilled
 	}
 
 	update(canvas, drawColor){
@@ -39,6 +46,7 @@ class ShapeTool{
 				var y = pointerY - this.initialPos.y
 				this.highlightedShape.setSize(x, y)
 				this.highlightedShape.fillColor = drawColor
+				this.highlightedShape.strokeColor = drawColor
 			}
 			else{
 				this.initialPos = {x: pointerX, y: pointerY}
@@ -59,13 +67,15 @@ class ShapeTool{
 					endX: pointerX,
 					endY: pointerY,
 					color: drawColor,
-					tool: this.currentShape
+					tool: this.currentShape,
+					isFilled: this.isFilled
 				}
 
 				this.game.networkManager.emit("paint", data)
 				this.paintManager.paint(data, this.paintManager.mainCanvas)
 				this.highlightedShape.visible = false
 				this.initialPos = null
+				this.highlightedShape.setSize(0, 0)
 			}
 		}
 	}

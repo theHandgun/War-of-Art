@@ -18,11 +18,11 @@ class PaintManager{
 			case "eraser":
 				this.erase(scaledData, targetCanvas) 
 			break;
-			case "filled-rect": 
-				this.paintRect(scaledData, targetCanvas, true) 
+			case "rect": 
+				this.paintRect(scaledData, targetCanvas, data.isFilled) 
 			break;
-			case "filled-ellipse":
-				this.paintCircle(scaledData, targetCanvas, true) 
+			case "ellipse":
+				this.paintEllipse(scaledData, targetCanvas, data.isFilled) 
 			break;
 		}
 	}
@@ -43,15 +43,28 @@ class PaintManager{
 		var height = data.endY - data.yPos;
 
 		canvas.graphics.fillStyle(data.color);
-		canvas.graphics.fillRect(data.xPos, data.yPos, width, height);
+		canvas.graphics.lineStyle(2, data.color);
+
+		if(isFilled){
+			canvas.graphics.fillRect(data.xPos, data.yPos, width, height);
+		} else {
+			canvas.graphics.strokeRect(data.xPos, data.yPos, width, height);
+		}
+
 	}
 
-	paintCircle(data, canvas, isFilled){
+	paintEllipse(data, canvas, isFilled){
 		var width = data.endX - data.xPos;
 		var height = data.endY - data.yPos;
 
 		canvas.graphics.fillStyle(data.color);
-		canvas.graphics.fillEllipse(data.xPos, data.yPos, width, height, 100);
+		canvas.graphics.lineStyle(2, data.color);
+		// Adding half the width and height because ellipse origin is it's center. We want origin to be up left corner same as highlighted ellipse object.
+		if(isFilled){
+			canvas.graphics.fillEllipse(data.xPos + width/2, data.yPos + height/2, width, height);
+		} else {
+			canvas.graphics.strokeEllipse(data.xPos + width/2, data.yPos + height/2, width, height);
+		}
 	}
 
 
