@@ -20,9 +20,7 @@ class PenTool{
 			this.OldMouseX = pointerX;
 			this.OldMouseY = pointerY;
 		}
-
-
-
+		
 		if(this.gamePointer.leftButtonDown()){
 
 			var paintData = {
@@ -36,7 +34,7 @@ class PenTool{
 			this.game.networkManager.emit("paint", paintData)
 			this.paintManager.paint(paintData, this.paintManager.mainCanvas)
 		}
-		/*else if(this.gamePointer.rightButtonDown()){
+		else if(this.gamePointer.rightButtonDown()){
 			this.eraserMarker.x = pointerX
 			this.eraserMarker.y = pointerY
 			this.eraserMarker.visible = true
@@ -52,7 +50,7 @@ class PenTool{
 		}
 		else{
 			this.eraserMarker.visible = false
-		}*/
+		}
 
 		this.OldMouseX = pointerX;
 		this.OldMouseY = pointerY;

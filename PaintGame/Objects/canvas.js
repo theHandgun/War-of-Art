@@ -134,6 +134,8 @@ class Canvas {
 	clearBGTexture(){
 		//Change canvas texture to plain white.
 		var texture = this.game.textures.get(this.textureID)
+		if(texture.key == "__MISSING") return;
+
         var imageData = texture.getData(0, 0, texture.width, texture.height)
         var pixelData = imageData.data;
         for (var i=0; i < pixelData.length; i++) {

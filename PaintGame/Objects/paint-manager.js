@@ -22,10 +22,10 @@ class PaintManager{
 				this.erase(scaledData, targetCanvas) 
 			break;
 			case "rect": 
-				this.paintRect(scaledData, targetCanvas) 
+				this.paintRect(scaledData, targetCanvas, data.isFilled) 
 			break;
 			case "ellipse":
-				this.paintEllipse(scaledData, targetCanvas) 
+				this.paintEllipse(scaledData, targetCanvas, data.isFilled) 
 			break;
 			case "bucket-fill":
 				this.floodFill(scaledData, targetCanvas)
@@ -51,7 +51,7 @@ class PaintManager{
 		canvas.graphics.fillStyle(data.color);
 		canvas.graphics.lineStyle(2, data.color);
 
-		if(data.isFilled){
+		if(isFilled){
 			canvas.graphics.fillRect(data.xPos, data.yPos, width, height);
 		} else {
 			canvas.graphics.strokeRect(data.xPos, data.yPos, width, height);
@@ -59,14 +59,14 @@ class PaintManager{
 
 	}
 
-	paintEllipse(data, canvas){
+	paintEllipse(data, canvas, isFilled){
 		var width = data.endX - data.xPos;
 		var height = data.endY - data.yPos;
 
 		canvas.graphics.fillStyle(data.color);
 		canvas.graphics.lineStyle(2, data.color);
 		// Adding half the width and height because ellipse origin is it's center. We want origin to be up left corner same as highlighted ellipse object.
-		if(data.isFilled){
+		if(isFilled){
 			canvas.graphics.fillEllipse(data.xPos + width/2, data.yPos + height/2, width, height);
 		} else {
 			canvas.graphics.strokeEllipse(data.xPos + width/2, data.yPos + height/2, width, height);

@@ -11,7 +11,7 @@ class BucketTool{
 
 	update(canvas, drawColor, game){
 		
-		if(this.gamePointer.rightButtonDown() && this.canUse){
+		if(this.gamePointer.leftButtonDown() && this.canUse){
 
 			var pointerX = this.game.input.x;
 			var pointerY = this.game.input.y;
@@ -25,7 +25,7 @@ class BucketTool{
 			this.game.networkManager.emit("paint", data)
 			this.canUse = false
 			var self = this
-			var interval = setInterval(function(){self.canUse = true; clearInterval(interval); console.log("can use it now.")}, this.useCooldown)
+			var interval = setInterval(function(){self.canUse = true; clearInterval(interval)}, this.useCooldown)
 		}
 	}
 
