@@ -35,7 +35,7 @@ class ShapeTool{
 		this.isFilled = isFilled
 	}
 
-	update(canvas, drawColor){
+	update(drawColor){
 		var pointerX = this.game.input.x;
 		var pointerY = this.game.input.y;
 

@@ -175,7 +175,7 @@ function StartRound(){
 		io.to(drawingPersonR.id).emit("selected-painter", curGuessWord)
 		io.to(drawingPersonL.id).emit("selected-painter", curGuessWord)
 
-		roundTimeRemaining = 30
+		roundTimeRemaining = 300
 
 		roundTimer = setInterval(
 			function(){
