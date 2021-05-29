@@ -20,8 +20,9 @@ class Toolbox{
 			0xFFAEC9,
 			0xFFC90E,
 		]
+
 		this.color = 0x000000
-		this.selectedTool = "filled-circle"
+		this.selectedTool = "pen"
 
 		// This shouldn't be here, remove it after moving the clear all button.
 		this.networkManager = game.networkManager
@@ -29,6 +30,7 @@ class Toolbox{
 
 		this.pen = new PenTool(game)
 		this.shapeTool = new ShapeTool(game)
+		this.bucketTool = new BucketTool(game)
 		
 	}
 
@@ -67,7 +69,6 @@ class Toolbox{
 		
 		this.pen.create(this.game, this.canvasObj, this.canvasObj.graphicsMask)
 		this.shapeTool.create(this.canvasObj.graphicsMask)
-		this.shapeTool.setShape("filled-ellipse")
 		
 		this.selectedClrImg = this.game.add.sprite(this.xPos, this.yPos - 200, "box")
 		this.selectedClrImg.setScale(1.6)
@@ -77,13 +78,20 @@ class Toolbox{
 
 	update()
 	{
+		this.bucketTool.update(this.canvasObj, this.color)
 
 		if(this.selectedTool == "pen"){
-			this.pen.update(this.canvas, this.color)
+			this.pen.update(this.color)
+		}
+		else if (this.selectedTool == "bucket"){
+			this.bucketTool.update(this.canvasObj, this.color)
 		}
 		else{
-			this.shapeTool.update(this.canvas, this.color, this.selectedTool)
+			console.log("asd")
+			this.shapeTool.setShape(this.selectedTool, false)
+			this.shapeTool.update(this.color, this.selectedTool)
 		}
+
 	}
 
 	selectColor(index){
@@ -94,6 +102,7 @@ class Toolbox{
 	setCanvas(canvas){
 		this.canvasObj = canvas
 		this.create(game)
+
 	}
 
 	setVisible(isVisible){

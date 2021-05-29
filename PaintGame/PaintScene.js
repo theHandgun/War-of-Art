@@ -27,7 +27,7 @@ class PaintScene extends Phaser.Scene{
     	this.UserTextArr = []
     	this.PortraitArr = []
 
-    	this.paintManager = new PaintManager()
+    	this.paintManager = new PaintManager(this)
     	this.networkManager = new NetworkManager(this.io, this, this.paintManager)
         
     }
@@ -52,7 +52,7 @@ class PaintScene extends Phaser.Scene{
 	CreateGenericObjects(){
 		this.IDText = this.add.text(10,20, "ID: " + this.id);
 
-		this.playerBox = this.add.sprite(110, 355,"playersContainer")
+		this.playerBox = this.add.sprite(110, 355, "playersContainer")
 		this.playerBox.setScale(0.35)
 
 		this.chat = new Chat(400, 420, this)
