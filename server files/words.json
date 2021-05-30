@@ -1,6 +1,12 @@
 [
-	"word1",
-	"word2",
-	"word3",
-	"word4"
+	"telefon", "araba", "bilgisayar", "fare", "kulaklık", "klavye", "buhar", "küpe", "elmas", "elma", "armut", "kiraz", "çekirdek", "can simidi",
+	"yatak", "yorgan", "yastık", "baza", "boza", "çaydanlık", "çay", "kapı", "uçak", "kitap", "koli", "sandık", "pencere", "duvar", "yüzük", "düşmek",
+	"merdiven", "bant", "klasör", "solucan", "örümcek", "deve", "motor", "kaput", "egzoz", "at", "at arabası", "ağaç", "çiçek", "arı", "arı kovanı",
+	"resim", "boya", "çerçeve", "masa", "sandalye", "masa örtüsü", "papağan", "aslan", "kaplan", "kalem", "kalemlik", "makas", "cetvel", "silgi", "uçlu kalem",
+	"kalemtıraş", "öğretmen", "öğrenci", "sınıf", "mutfak", "salon", "banka", "kasiyer", "ödemek", "fiyat", "indirim", "sirk", "halı", "havuç", "peynir", "sinema",
+	"saat", "kahve", "tabut", "bakır", "ceset", "hançer", "kılıç", "kalkan", "çöl", "doktor", "para", "çekmece", "sürücü", "eskimo", "aile", "baba", "anne", "parmak",
+	"orman", "fosil", "buz dolabı", "galaksi", "garaj", "sarımsak", "gitar", "sahil", "hemşire", "acıkmak", "okçu", "fırın", "ekmek", "bale", "tiyatro", "muz",
+	"basketbol", "barmen", "şişe", "esnemek", "köprü", "buton", "kaktüs", "kamera", "tasma", "eşek", "inek", "gezegen", "dünya", "çekiç", "kalas", "çarpmak", "ceket",
+	"şovalye", "avukat", "mıknatıs", "maskot", "kas", "iğne", "oralet", "portakal", "karpuz", "kavun", "oksijen", "piknik", "kolon"
+
 ]

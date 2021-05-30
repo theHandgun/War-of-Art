@@ -23,6 +23,7 @@ let drawingPersonR;
 // Reading words from json into a variable.
 var wordData = fs.readFileSync('words.json');
 let possibleWords = JSON.parse(wordData);
+console.log("Possible word count: " + possibleWords.length)
 // ---
 
 let gameState = "LOBBY";
