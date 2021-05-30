@@ -33,7 +33,6 @@ class ShapeTool{
 		
 		this.currentShape = newShape
 		this.isFilled = isFilled
-		console.log("shape: " + newShape + ", isFilled: " + isFilled)
 	}
 
 	update(drawColor){

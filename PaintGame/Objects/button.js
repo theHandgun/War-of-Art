@@ -69,9 +69,9 @@ class Button {
   	setInteractable(newState){
   		this.interactable = newState
   		if(newState)
-  			this.button.setTexture(self.hasCustomData ? self.customData.normal : this.size)
+  			this.button.setTexture(this.hasCustomData ? this.customData.normal : this.size)
   		else
-  			this.button.setTexture(self.hasCustomData ? self.customData.pressed : (this.size + "P"))
+  			this.button.setTexture(this.hasCustomData ? this.customData.pressed : (this.size + "P"))
   	}
 
 	static preloadAll(game){

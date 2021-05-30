@@ -99,7 +99,7 @@ io.on("connection", function(socket){
 
 		if(paintSide){
 			// TODO: Don't send message to the sender.
-			io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: paintSide, color: data.color, tool: data.tool})	
+			io.emit("paint-response", {xPos: data.xPos, yPos: data.yPos, endX: data.endX, endY: data.endY, canvas: paintSide, color: data.color, tool: data.tool, isFilled: data.isFilled})	
 		}
 
 	})

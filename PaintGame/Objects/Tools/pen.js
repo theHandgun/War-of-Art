@@ -42,7 +42,8 @@ class PenTool{
 			var eraseData = {
 				xPos: this.OldMouseX, 
 				yPos: this.OldMouseY, 
-				tool: "eraser"
+				tool: "eraser",
+				color: drawColor
 			}
 
 			this.game.networkManager.emit("paint", eraseData)

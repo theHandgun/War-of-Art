@@ -149,6 +149,7 @@ class PaintManager{
 
 	erase(data, canvas){
 		var scaleRatio = data.scaleAmount || 1
+		canvas.graphics.fillStyle(data.color);
 		canvas.graphics.fillRect(data.xPos - (10/scaleRatio), data.yPos - (10/scaleRatio), 20/scaleRatio, 20/scaleRatio);	
 	}
 }

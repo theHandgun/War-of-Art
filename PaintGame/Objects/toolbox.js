@@ -3,11 +3,13 @@ class Toolbox{
 		this.xPos = xPos
 		this.yPos = yPos
 		this.game = game
+
 		this.paintButtons = []
+		this.toolButtons = []
 
 		this.colorList =[
 			0x000000,
-			0x7F7F7F,
+			0xFFFFFF,
 			0x880015,
 			0xED1C24,
 			0xFF7F27,
@@ -72,9 +74,13 @@ class Toolbox{
 			for (var y = 0; y < 2; y++) {
 
 				let toolName = this.toolList[index].tool
-
-				this.eraseButton = new Button("", (this.xPos - 14.5) + y*29, (this.yPos + 67) + x*29, "", this.game, function(){
+				let thisIndex = index
+				this.toolButtons[index] = new Button("", (this.xPos - 14.5) + y*29, (this.yPos + 67) + x*29, "", this.game, function(){
 					self.setSelectedTool(toolName)
+					for (var i = self.toolButtons.length - 1; i >= 0; i--) {
+						self.toolButtons[i].setInteractable(true)
+					}
+					self.toolButtons[thisIndex].setInteractable(false)
 				}, {
 					normal: this.toolList[index].button,
 					hover: this.toolList[index].button + "H",
@@ -97,6 +103,7 @@ class Toolbox{
 			hasText: false
 		})
 		
+		this.toolButtons[0].setInteractable(false)
 		this.pen.create(this.game, this.canvasObj, this.canvasObj.graphicsMask)
 		this.shapeTool.create(this.canvasObj.graphicsMask)
 		
@@ -143,6 +150,10 @@ class Toolbox{
 	setVisible(isVisible){
 		for (var i = 0; i < this.paintButtons.length; i++) {
 			this.paintButtons[i].visible = isVisible
+		}
+
+		for (var i = 0; i < this.toolButtons.length; i++) {
+			this.toolButtons[i].setVisible(isVisible)
 		}
 		this.eraseButton.setVisible(isVisible)
 		this.selectedClrImg.visible = isVisible
