@@ -39,6 +39,11 @@ Phaser 3 graphics library but wasn't able to find out what I wanted. So I had to
 
 As you can see on the image, location of two points at the same relative position change dependent on the distance to the edges I realized that only thing I had to do was find the x and y distance of points to the edges of the canvas, then multiply that distance with ratio of two canvases then I would get the same realtive points. Doing that to two points, I get two points to draw a line. I never expected it to be that simple but I was able to find the solution and implement it in a few hours.
 
+### Flood Fill Algorithm
+There is a bucket tool that can be used to fill up closed shapes with color. This is accomplished by getting the pixel color on the clicked pixel and then painting all adjent
+pixels with same color as the first pixel. I was going to use recursive method but I realized there were way too many pixels in the canvas so that probably would result in
+stack overflow error so I've gone with a while loop instead.
+
 ## Game loop continues
 After voting is over, players are sent to the screen where they wait for the host to continue the game again new players can only join the lobby at this time. I have future plans of removing the need for a host to press continue button every round after I am done with doing a few play tests.
 
@@ -46,3 +51,4 @@ After voting is over, players are sent to the screen where they wait for the hos
 ## Problems to Fix
 * PaintScene is very crowded, should split it up to a few more files for more organisation.
 * New players can't join until the round is over due to the server not saving map of the canvases.
+* Antialiasing makes bucket fill fail on the edges of the shape.
