@@ -204,7 +204,7 @@ function StartRound(){
 }
 
 function EndOfPainting(){
-	io.emit("time-up")
+	io.emit("time-up", {word: curGuessWord})
 	gameState = "EPIL-ROUND"
 
 	var voteTimer = setInterval(

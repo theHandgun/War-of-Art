@@ -54,7 +54,6 @@ class NetworkManager{
 
         io.on("guessed-correct", function(){
         	game.guessB.setVisible(false)
-        	alert("Doğru bildin, +10 puan")
         })
 
         io.on("cancel-round", function(data){
@@ -72,6 +71,10 @@ class NetworkManager{
         	game.gameState = "EPIL-LOBBY"
         	game.PrepareSceneForVote(false)
         	game.clearCanvasTimers()
+                game.chat.addText({
+                        type: "SYSTEM",
+                        message: "Çizilen kelime " + data.word + " idi."
+                })
 
         })
 
@@ -85,8 +88,7 @@ class NetworkManager{
         	game.PrepreSceneForVoteResults()
         })
 
-        io.on("chat-text", function(data){
-        	// TODO: Don't send data from server in the first place. (Or maybe let it send, I am not sure yet.)
+        io.on("chat-text", function(data){  	
         	game.chat.addText(data)
         })
 

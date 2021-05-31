@@ -24,12 +24,9 @@ class MainScene extends Phaser.Scene{
         var self = this
 
         var nick = prompt("Rumuz giriniz:")
-
-        this.registry.set("socket-ip", "localhost")
-        this.registry.set("socket-port", "3000")
         this.registry.set("nick", nick)
 
-        this.io = io("ws://localhost:3000", {transports : ["websocket"]});
+        this.io = io("https://warofart.herokuapp.com", {transports : ["websocket"]});
 
         this.io.on("connect", function(socket){
         	this.emit("attemptJoin", {nick: self.registry.get("nick"), portrait: self.portrait.getPortrait()})
