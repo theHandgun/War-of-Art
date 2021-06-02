@@ -13,6 +13,7 @@ class PaintScene extends Phaser.Scene{
 
 		this.load.image("canvas", "PaintGame/Assets/Components/canvas.png")
 		this.load.image("playersContainer", "PaintGame/Assets/Components/lobby.png")
+		this.load.html('guess', 'PaintGame/DOM/guess.html');
 	}
 
 	init(data)
@@ -76,6 +77,7 @@ class PaintScene extends Phaser.Scene{
 			this.PortraitArr[i].visible = false
 			this.PortraitArr[i].setOrigin(0, 0)
 		}
+
 	}
 
 	CreateButtons(){
@@ -85,10 +87,20 @@ class PaintScene extends Phaser.Scene{
 			self.networkManager.emit("start-game-request")
         })
 
-        this.guessB = new Button("longButton", 645, 660, "Tahmin Yap", this, function(){
-        	var guessWord = prompt()
+		this.guessDOM = this.add.dom(615, 650).createFromCache("guess")
+		this.guessDOM.addListener("keyup")
+		this.guessDOM.on("keyup", function(event){
+			if(event.key == "Enter")
+				self.guessB.clickFunc()
+		})
+
+        this.guessB = new Button("smallButton", 770, 650, ">", this, function(){
+        	var guessWord = self.guessDOM.getChildByName("guessInput").value
 			self.networkManager.emit("guess-word", guessWord)
+			self.guessDOM.getChildByName("guessInput").value = ""
         })
+        this.guessB.button.setScale(0.12)
+
 
         this.voteL = new Button("midButton", 475, 385, "Oy Ver", this, function(){
 			self.networkManager.emit("vote", "L")
@@ -102,6 +114,7 @@ class PaintScene extends Phaser.Scene{
 			self.voteL.setInteractable(true)
         })
 
+        this.guessDOM.setVisible(false)
 		this.guessB.setVisible(false)
 		this.hostB.setVisible(this.isHost || false)
         this.voteL.setVisible(false)
@@ -152,6 +165,7 @@ class PaintScene extends Phaser.Scene{
 		this.paintWord.visible = true
 		this.paintHeaderTxt.visible = true
 		this.hostB.setVisible(false)
+		this.guessDOM.setVisible(false)
 		this.guessB.setVisible(false)
 		this.chat.setVisible(false)
 		this.versusImageR.visible = false
@@ -165,6 +179,7 @@ class PaintScene extends Phaser.Scene{
 		this.paintWord.setText("")
 		this.hostB.setVisible(false)
 		this.guessB.setVisible(false)
+		this.guessDOM.setVisible(false)
 		this.chat.setVisible(true)
 
 		if(!this.isDrawing){
@@ -209,6 +224,7 @@ class PaintScene extends Phaser.Scene{
 		this.hostB.setVisible(false)
 		this.paintWord.setText("")
 		this.guessB.setVisible(canGuess || true)
+		this.guessDOM.setVisible(canGuess || false)
 		this.chat.setVisible(true)
 		this.setVersusScreenVisible(false)
 		this.clearCanvases()
@@ -223,6 +239,7 @@ class PaintScene extends Phaser.Scene{
 		this.hostB.setVisible(this.isHost)
 
 		this.guessB.setVisible(false)
+		this.guessDOM.setVisible(false)
 		this.voteL.setVisible(false)
         this.voteR.setVisible(false)
 		this.chat.setVisible(false)
@@ -237,6 +254,7 @@ class PaintScene extends Phaser.Scene{
 		this.paintHeaderTxt.setText("Sıradaki tura girmek için lütfen bekle.")
 		this.paintWord.setText("")
 		this.guessB.setVisible(false)
+		this.guessDOM.setVisible(false)
 		this.clearCanvases()
 	}
 

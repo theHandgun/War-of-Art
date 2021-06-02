@@ -26,14 +26,27 @@
 </head>
 <body>
 
+
     <script>
 
         var config = {
-          width: 1000,
-          height: 700,
-          scene: [BackgroundScene, MainScene, PaintScene]
+            width: 1000,
+            height: 700,
+            parent: 'paint-game',
+            scene: [BackgroundScene, MainScene, PaintScene],
+            dom: {
+                createContainer: true
+            },
+
+            callbacks: {
+                postBoot: function (game) {
+                    // To fix pointer events.
+                    game.domContainer.style.pointerEvents = 'none';
+                }
+            }
         };
          
+
         var game = new Phaser.Game(config);
         game.input.mouse.disableContextMenu();
 

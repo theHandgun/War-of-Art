@@ -3,6 +3,7 @@ class MainScene extends Phaser.Scene{
 		super("MainScene");
 
 	}
+
 	init(){
 		
 	}
@@ -10,24 +11,37 @@ class MainScene extends Phaser.Scene{
 	preload(){
 		Button.preloadAll(this)
 		PortraitManager.preloadAll(this)
+        this.load.html('nameInput', 'PaintGame/DOM/username.html');
 	}
 
 
 	create(){
         var self = this
-        this.joinB = new Button("longButton", 500,400, "Giriş Yap", this, function() {self.onJoin()} )
         this.portrait = new PortraitManager(500, 200, this)
+        this.joinB = new Button("longButton", 503, 420, "Giriş Yap", this, 
+            function() 
+            {
+                self.onJoin()
+                self.nameInput.getChildByName("nameInput").value = ""
+            })
+
+        this.nameInput = this.add.dom(504, 350).createFromCache("nameInput")
+        this.nameInput.addListener("keyup")
+        this.nameInput.on("keyup", function(event){
+            if(event.key == "Enter")
+                self.joinB.clickFunc()
+        })
     }
 
     onJoin(){
   
         var self = this
 
-        var nick = prompt("Rumuz giriniz:")
+        var nick = this.nameInput.getChildByName("nameInput").value
         this.registry.set("nick", nick)
 
         this.io = io("https://warofart.herokuapp.com", {transports : ["websocket"]});
-
+        
         this.io.on("connect", function(socket){
         	this.emit("attemptJoin", {nick: self.registry.get("nick"), portrait: self.portrait.getPortrait()})
         })

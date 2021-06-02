@@ -65,7 +65,7 @@ class Button {
   			this.bText.visible = newState
   		}
   	}
-
+  	
   	setInteractable(newState){
   		this.interactable = newState
   		if(newState)
