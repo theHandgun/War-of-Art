@@ -40,8 +40,8 @@ class MainScene extends Phaser.Scene{
         var nick = this.nameInput.getChildByName("nameInput").value
         this.registry.set("nick", nick)
 
-        this.io = io("https://warofart.herokuapp.com", {transports : ["websocket"]});
-        
+        //this.io = io("https://warofart.herokuapp.com", {transports : ["websocket"]});
+        this.io = io("ws://localhost:3000", {transports : ["websocket"]});
         this.io.on("connect", function(socket){
         	this.emit("attemptJoin", {nick: self.registry.get("nick"), portrait: self.portrait.getPortrait()})
         })

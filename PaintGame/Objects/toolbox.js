@@ -115,7 +115,9 @@ class Toolbox{
 
 	update()
 	{
-
+		if(!this.canvasObj.canPaint)
+			return
+		
 		if(this.selectedTool == "pen"){
 			this.pen.update(this.color)
 		}

@@ -153,7 +153,7 @@ class PaintScene extends Phaser.Scene{
 		this.versusTextR.visible = false
 		this.versusTextR.setOrigin(0.5,0.5)
 
-		this.versusTxt = this.add.text(630, 180, "VS", {fontFamily: "Arial", fontSize: 36, fontStyle:"bold"})
+		this.versusTxt = this.add.text(615, 180, "VS", {fontFamily: "Arial", fontSize: 36, fontStyle:"bold"})
 		this.versusTxt.visible = false
 	}
 
@@ -190,6 +190,7 @@ class PaintScene extends Phaser.Scene{
 
 	PrepareSceneForVersus(data){
 		this.paintCanvasDrawable.setVisible(false)
+		this.paintCanvasDrawable.canPaint = false
 		this.paintCanvasL.setVisible(false)
 		this.paintCanvasR.setVisible(false)
 		this.chat.setVisible(true)
@@ -224,7 +225,7 @@ class PaintScene extends Phaser.Scene{
 		this.hostB.setVisible(false)
 		this.paintWord.setText("")
 		this.guessB.setVisible(canGuess || true)
-		this.guessDOM.setVisible(canGuess || false)
+		this.guessDOM.setVisible(canGuess || true)
 		this.chat.setVisible(true)
 		this.setVersusScreenVisible(false)
 		this.clearCanvases()
@@ -268,6 +269,7 @@ class PaintScene extends Phaser.Scene{
 
 	showDrawBoard(isDrawing){
 		this.paintCanvasDrawable.setVisible(isDrawing)
+		this.paintCanvasDrawable.canPaint = isDrawing
 		this.paintCanvasL.setVisible(!isDrawing)
 		this.paintCanvasR.setVisible(!isDrawing)
 	}

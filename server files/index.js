@@ -66,6 +66,10 @@ io.on("connection", function(socket){
 	socket.on("guess-word", function(data){
 		if(gameState == "ROUND"){
 			if(socket.id != drawingPersonR.id && socket.id != drawingPersonL.id){
+				
+				if(data.length == 0 || data.length > 18 )
+					return
+
 				var userName = connectedUsers.filter(usr => usr.id == socket.id)[0].nick
 				if(data == curGuessWord){
 					emitText(userName + " kelimeyi buldu!")
@@ -176,7 +180,7 @@ function StartRound(){
 		io.to(drawingPersonR.id).emit("selected-painter", curGuessWord)
 		io.to(drawingPersonL.id).emit("selected-painter", curGuessWord)
 
-		roundTimeRemaining = 300
+		roundTimeRemaining = 90
 
 		roundTimer = setInterval(
 			function(){
