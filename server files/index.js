@@ -144,7 +144,7 @@ function ToLobby(){
 
 function AttemptStartGame(socket){
 	if(connectedUsers[0].id == socket.id){
-		if(connectedUsers.length >= 3){
+		if(connectedUsers.length >= 3 && gameState == "LOBBY"){
 			StartRound();
 		}
 		else{
