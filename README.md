@@ -1,5 +1,5 @@
 # War-of-Art (Placeholder Name)
-An online painting and guessing game similiar to gartic.io made with Javascript using Phaser 3 with Express and Socket.io on server. Game is still in development
+An online painting and guessing game similiar to gartic.io made with Javascript using Phaser 3 with Express and Socket.io on server. The game is abandoned.
 
 ## Public Lobby
 Players join a public lobby (there is only 1 server support for testing purposes for now) and the first person to join the lobby becomes the game manager. 
